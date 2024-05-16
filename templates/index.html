@@ -1,0 +1,6 @@
+{% extends 'base.html' %}
+
+{% block title %}Hello{% endblock %}
+{% block content %}
+<h1>Welcome{% if username %}, {{ username }}{% else %}, Guest{% endif %}</h1>
+{% endblock %}
