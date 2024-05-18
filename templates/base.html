@@ -1,26 +1,29 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
     <title>{% block title %}Welcome{% endblock %}</title>
 </head>
 <body>
     <header>
-        <nav>
-            <ul>
-                <li><a href="/">Home</a></li>
-                <li><a href="/about">About</a></li>
+        <nav class="navbar">
+            <ul class="navbar-list">
+                <li class="navbar-item"><a href="/">Home</a></li>
+                <li class="navbar-item"><a href="/about">About</a></li>
                 {% if username %}
-                    <li><a href="/logout">Logout</a></li>
+                    <li class="navbar-item"><a href="/logout">Logout</a></li>
                 {% else %}
-                    <li><a href="/login">Login</a></li>
-                    <li><a href="/signup">Signup</a></li>
+                    <li class="navbar-item"><a href="/login">Login</a></li>
+                    <li class="navbar-item"><a href="/signup">Signup</a></li>
                 {% endif %}
             </ul>
         </nav>
     </header>
+    <main>
+        {% block content %}
+        {% endblock %}
+    </main>
 </body>
-<main>
-    {% block content %}
-    {% endblock %}
-</main>
 </html>
