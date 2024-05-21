@@ -10,7 +10,6 @@ def logout():
     session.pop('username', None)
     return redirect(url_for('index'))
 
-
 @auth_bp.route('/signup', methods=['GET', 'POST'])
 def signup():
     if request.method == 'POST':
@@ -33,7 +32,6 @@ def signup():
             return render_template("signup.html", error=error)
         else:
             return redirect(url_for('index'))
-        
     return render_template("signup.html", error=None)
 
 @auth_bp.route('/login', methods=['GET', 'POST'])
