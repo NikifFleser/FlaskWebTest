@@ -3,12 +3,13 @@ from flask import render_template
 from db import init_db, get_db
 from auth import auth_bp
 
+
 app = Flask(__name__)
 app.secret_key = 'dev'
 
 app.register_blueprint(auth_bp)
 
-DATABASE = 'users.db'
+DATABASE = 'data.db'
 app.config['DATABASE'] = DATABASE
 init_db(app, DATABASE)
 
@@ -25,8 +26,8 @@ def about():
 
 # Close the database connection at request end
 @app.teardown_appcontext
-def close_connection(exception):
-    db = getattr(g, '_database', None)
+def close_db_connection(exception):
+    db = getattr(g, 'database', None)
     if db is not None:
         db.close()
 

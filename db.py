@@ -1,15 +1,18 @@
-from flask import Flask, g
+from flask import g
 import sqlite3
 
 def init_db(app, db_file):
     with app.app_context():
         db = get_db(db_file)
         with app.open_resource('schema.sql', mode='r') as f:
-            db.cursor().executescript(f.read())
+            script = f.read()
+            cursor = db.cursor()
+            cursor.executescript(script)
         db.commit()
 
 def get_db(db_file):
-    db = getattr(g, '_database', None)
+    db = getattr(g, 'database', None)
     if db is None:
-        db = g._database = sqlite3.connect(db_file)
+        db  = sqlite3.connect(db_file)
+        g.database = db
     return db
