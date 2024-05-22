@@ -8,7 +8,9 @@ CREATE TABLE IF NOT EXISTS match (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     team1 TEXT NOT NULL,
     team2 TEXT NOT NULL,
-    date DATE NOT NULL
+    matchday INTEGER NOT NULL,
+    result TEXT,
+    date DATE
 );
 
 CREATE TABLE IF NOT EXISTS bet (

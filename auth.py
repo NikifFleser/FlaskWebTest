@@ -1,5 +1,5 @@
 from flask import Blueprint, session, request, current_app
-from flask import redirect, url_for, render_template
+from flask import redirect, url_for, render_template, flash
 from db import get_db
 
 auth_bp = Blueprint('auth', __name__)
@@ -50,7 +50,27 @@ def login():
                             (username, password)).fetchone()
             if user:
                 session['username'] = username
-                return redirect(url_for('index'))
+                next = request.form.get("next")
+                if next:
+                    return redirect(next)
+                else:
+                    return redirect(url_for('index'))
             else:
                 error = "username or password incorrect"
     return render_template("login.html", error=error)
+
+def requires_login(f):
+    def decorated_function(*args, **kwargs):
+        if session["username"] is None:
+            flash('You need to be logged in to access this page.')
+            return redirect(url_for('login', next=request.url))
+        return f(*args, **kwargs)
+    return decorated_function
+
+def requires_admin(f):
+    def decorated_function(*args, **kwargs):
+        if session["username"] != 'admin':
+            flash('You do not have permission to access this page.')
+            return redirect(url_for('index'))
+        return f(*args, **kwargs)
+    return decorated_function

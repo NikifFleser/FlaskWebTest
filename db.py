@@ -16,3 +16,7 @@ def get_db(db_file):
         db  = sqlite3.connect(db_file)
         g.database = db
     return db
+
+def update_db(db_file):
+    db = get_db(db_file)
+    pass

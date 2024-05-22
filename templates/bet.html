@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+
+{% block title %}
+Place Your Bets
+{% endblock %}
+
+
+{% block content %}
+Place Your Bets for Matchday
+
+<form method="POST">
+    {% for match in matches %}
+        <div>
+            <label>{{ match['team1'] }} vs {{ match['team2'] }}</label><br>
+            Team 1 Goals: <input type="number" name="match_{{ match['id'] }}_team1_goals"><br>
+            Team 2 Goals: <input type="number" name="match_{{ match['id'] }}_team2_goals"><br>
+        </div>
+        <br>
+    {% endfor %}
+    <input type="submit" value="Submit Bets">
+</form>
+{% endblock %}
