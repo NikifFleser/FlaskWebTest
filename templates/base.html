@@ -15,6 +15,9 @@
                 <li class="navbar-item"><a href="/bet">Bet</a></li>
                 {% if username %}
                     <li class="navbar-item"><a href="/logout">Logout</a></li>
+                    {% if username == "admin" %}
+                    <li class="navbar-item"><a href="/admin">Admin</a></li>
+                    {% endif %}
                 {% else %}
                     <li class="navbar-item"><a href="/login">Login</a></li>
                     <li class="navbar-item"><a href="/signup">Signup</a></li>
