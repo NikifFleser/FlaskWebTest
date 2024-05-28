@@ -1,8 +1,9 @@
 from flask import Flask, request, session, g
 from flask import render_template
-from db import init_db, get_db, update_db
+from db import init_db, get_db
 from auth import auth_bp, requires_admin, requires_login
 from requests import get as get_from
+from api import initial_fill_db
 
 
 app = Flask(__name__)
@@ -27,7 +28,7 @@ def about():
 @requires_admin
 @app.route('/admin')
 def admin():
-    update_db(DATABASE)
+    #initial_fill_db(DATABASE)
     return "Hi"
 
 @requires_login

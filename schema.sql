@@ -4,18 +4,17 @@ CREATE TABLE IF NOT EXISTS users (
     password TEXT NOT NULL
 );
 
-DROP TABLE match;
-
-CREATE TABLE IF NOT EXISTS match (
+CREATE TABLE IF NOT EXISTS matches (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     team1 TEXT NOT NULL,
     team2 TEXT NOT NULL,
     matchday INTEGER NOT NULL,
-    result TEXT,
-    date DATE
+    date DATE NOT NULL,
+    location TEXT NOT NULL,
+    result TEXT
 );
 
-CREATE TABLE IF NOT EXISTS bet (
+CREATE TABLE IF NOT EXISTS bets (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     user_id INTEGER NOT NULL,
     match_id INTEGER NOT NULL,

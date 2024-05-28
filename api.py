@@ -1,4 +1,5 @@
 from requests import get as get_from
+from db import get_db
 
 def get_games(matchday="1", season="2024", tournament="em"):
     url = f"https://api.openligadb.de/getmatchdata/{tournament}/{season}/{matchday}"
@@ -20,7 +21,19 @@ def get_games(matchday="1", season="2024", tournament="em"):
             game["result"] = f"{result[1]["pointsTeam1"]}:{result[1]["pointsTeam2"]}"
         except(IndexError):
             game["result"] = None
+        games.append(game)
 
-    print(game)
+    return games
 
-get_games()
+def initial_fill_db(db_file):
+    db = get_db(db_file)
+    for matchday in range(1, 8):
+        games = get_games(matchday)
+        for game in games:
+            db.execute(
+                'INSERT INTO matches (team1, team2, matchday, date, location, result) VALUES (?,?,?,?,?,?)',
+                (game["team1"], game["team2"], matchday, game["date"], game["location"], game["result"]))
+    db.commit()
+
+def update_db(db_file):
+    pass
