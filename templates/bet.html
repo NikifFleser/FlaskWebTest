@@ -6,17 +6,21 @@ Place Your Bets
 
 
 {% block content %}
-Place Your Bets for Matchday
+<h2>Place Your Bets for Matchday</h2>
 
 <form method="POST">
     {% for match in matches %}
-        <div>
-            <label>{{ match['team1'] }} vs {{ match['team2'] }}</label><br>
-            Team 1 Goals: <input type="number" name="match_{{ match['id'] }}_team1_goals"><br>
-            Team 2 Goals: <input type="number" name="match_{{ match['id'] }}_team2_goals"><br>
+        <div class="match-container">
+            <span class="team1-name">{{ match[1] }}</span>
+            <input type="number" name="match_{{ match[0] }}_team1_goals" min="0" max="9" class="goal-input">
+            <span class="vs">vs</span>
+            <input type="number" name="match_{{ match[0] }}_team2_goals" min="0" max="9" class="goal-input">
+            <span class="team2-name">{{ match[2] }}</span>
         </div>
         <br>
     {% endfor %}
-    <input type="submit" value="Submit Bets">
+    <input type="submit" value="Submit Bets" class="submit-button">
 </form>
 {% endblock %}
+
+

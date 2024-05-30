@@ -1,5 +1,5 @@
 from flask import Flask, request, session, g
-from flask import render_template
+from flask import render_template, redirect, url_for
 from db import init_db, get_db
 from auth import auth_bp, requires_admin, requires_login
 from requests import get as get_from
@@ -29,16 +29,18 @@ def about():
 @app.route('/admin')
 def admin():
     #initial_fill_db(DATABASE)
-    return "Hi"
+    return redirect(url_for("index"))
 
 @requires_login
 @app.route("/bet")
 def bet():
+    username = session.get('username')
     matchday = 1
     db = get_db(DATABASE)
-    matches = db.execute('SELECT * FROM match WHERE matchday = ?',
+    matches = db.execute('SELECT * FROM matches WHERE matchday = ?',
                             (matchday,)).fetchall()
-    return render_template("bet.html", matches=matches)
+
+    return render_template("bet.html", matches=matches, username=username)
 
 
 # Close the database connection at ?request? end
