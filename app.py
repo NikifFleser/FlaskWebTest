@@ -28,7 +28,7 @@ def about():
 @requires_admin
 @app.route('/admin')
 def admin():
-    #initial_fill_db(DATABASE)
+    initial_fill_db(DATABASE)
     return redirect(url_for("index"))
 
 @requires_login
