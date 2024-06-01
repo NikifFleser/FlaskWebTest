@@ -1,6 +1,7 @@
 from flask import Blueprint, session, request, current_app
 from flask import redirect, url_for, render_template, flash
 from db import get_db
+from functools import wraps
 
 auth_bp = Blueprint('auth', __name__)
 
@@ -21,12 +22,13 @@ def login():
         elif not password:
             error = "Please enter a password."
         else:
-            user = db.execute('SELECT * FROM users WHERE username = ? AND password = ?',
+            user_id = db.execute('SELECT id FROM users WHERE username = ? AND password = ?',
                             (username, password)).fetchone()
-            if user:
+            if user_id:
                 session['username'] = username
-                next_url = request.args.get("next")
-                print(next_url)
+                session["user_id"] = user_id
+                next_url = request.args.get("next_url")
+                print(f"request.args.get('next_url'): {next_url}")
                 if next_url:
                     return redirect(next_url)
                 else:
@@ -37,41 +39,59 @@ def login():
 
 @auth_bp.route('/signup', methods=['GET', 'POST'])
 def signup():
-    if request.method == 'POST':
-        error = None
-        username = request.form.get('username')
-        password = request.form.get('password')
-        db = get_db(current_app.config["DATABASE"])
-        if not username:
-            error = "Please enter a username."
-        elif not password:
-            error = "Please enter a password."
-        elif db.execute('SELECT * FROM users WHERE username = ?', (username,)).fetchone() is None:
-            db.execute('INSERT INTO users (username, password) VALUES (?, ?)', (username, password))
-            db.commit()
-            session["username"] = username
-        else:
-            error = "Username unavailable."
+    if request.method == 'GET':
+        return render_template("signup.html", error=None)
+    
+    # request.method is 'POST'
+    error = None
+    username = request.form.get('username')
+    password = request.form.get('password')
+    db = get_db(current_app.config["DATABASE"])
+    # failchecks
+    if not username:
+        error = "Please enter a username."
+    elif not password:
+        error = "Please enter a password."
+    elif db.execute('SELECT * FROM users WHERE username = ?', (username,)).fetchone() is not None:
+        error = "Username unavailable."
 
-        if error:
-            return render_template("signup.html", error=error)
-        else:
-            return redirect(url_for('index'))
-    return render_template("signup.html", error=None)
+    else: 
+        # create a new user
+        db.execute('INSERT INTO users (username, password) VALUES (?, ?)', (username, password))
+        db.commit()
+        # update session
+        user = db.execute('SELECT id FROM users WHERE username = ?', (username,)).fetchone()
+        print(user)
+        session["username"] = username
+        session["user_id"] = user[0]
+        # create the empty bets for the new user
+        games = db.execute("SELECT id FROM matches").fetchall()
+        print(games)
+        for game in games:
+            db.execute("INSERT INTO bets (user_id, match_id) VALUES (?, ?)", (user[0], game[0]))
+        db.commit()
+    if error:
+        return render_template("signup.html", error=error)
+    else:
+        return redirect(url_for('index'))
+    
 
 def requires_login(f):
+    @wraps(f)
     def decorated_function(*args, **kwargs):
-        if 'username' not in session:
-            flash('You need to be logged in to access this page.')
-            login_url = url_for('auth.login', next=request.url)
-            return redirect(login_url)
+        in_session = "username" in session
+        if not in_session:
+            return redirect(url_for('auth.login'))
         return f(*args, **kwargs)
     return decorated_function
 
 def requires_admin(f):
+    @wraps(f)
     def decorated_function(*args, **kwargs):
-        if session["username"] != 'admin':
-            flash('You do not have permission to access this page.')
+        in_session = "username" in session
+        if not in_session:
+            return redirect(url_for("index"))
+        elif session["username"] != 'admin':
             return redirect(url_for('index'))
         return f(*args, **kwargs)
     return decorated_function

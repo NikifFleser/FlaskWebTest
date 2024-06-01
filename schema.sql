@@ -18,8 +18,8 @@ CREATE TABLE IF NOT EXISTS bets (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     user_id INTEGER NOT NULL,
     match_id INTEGER NOT NULL,
-    team1_goals INTEGER NOT NULL,
-    team2_goals INTEGER NOT NULL,
+    team1_goals INTEGER,
+    team2_goals INTEGER,
     FOREIGN KEY (user_id) REFERENCES user (id),
     FOREIGN KEY (match_id) REFERENCES match (id)
 );

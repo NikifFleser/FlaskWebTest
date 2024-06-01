@@ -28,10 +28,11 @@ def about():
     username = session.get('username')
     return render_template('about.html', username=username)
 
-@requires_admin
+
 @app.route('/admin')
+@requires_admin
 def admin():
-    initial_fill_db(DATABASE)
+    #initial_fill_db(DATABASE)
     return redirect(url_for("index"))
 
 
@@ -52,18 +53,15 @@ def update_bet():
     match_id = data.get('match_id')
     team = data.get('team')
     goals = data.get('goals')
-
-    # Update the bet in the database
-    # Assuming you have a function to update the bet in the database:
-    update_bet_in_db(match_id, team, goals)
-
+    user_id = session["user_id"]
+    update_bet_in_db(match_id, team, goals, user_id)
     return jsonify({'status': 'success', 'match_id': match_id, 'team': team, 'goals': goals})
 
-def update_bet_in_db(match_id, team, goals):
-    # Implement the logic to update the bet in your database
-    # For example:
-    # db.execute('UPDATE bets SET goals = ? WHERE match_id = ? AND team = ?', (goals, match_id, team))
+def update_bet_in_db(match_id, team, goals, user_id):
+    db = get_db(DATABASE)
+    db.execute(f"UPDATE bets SET {team}_goals = ? WHERE match_id = ? and user_id = ?", (goals, match_id, user_id))
     print(f"updated bet nr {match_id}")
+    db.commit()
 
 # Close the database connection at ?request? end
 @app.teardown_appcontext
