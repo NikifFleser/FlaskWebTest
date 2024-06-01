@@ -18,7 +18,9 @@ def get_games(matchday="1", season="2024", tournament="em"):
 
         result = raw_game["matchResults"]
         try:
-            game["result"] = f"{result[1]["pointsTeam1"]}:{result[1]["pointsTeam2"]}"
+            g1 = result[1]['pointsTeam1']
+            g2 = result[1]['pointsTeam2']
+            game["result"] = f"{g1}:{g2}"
         except(IndexError):
             game["result"] = None
         games.append(game)
