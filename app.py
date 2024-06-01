@@ -10,6 +10,7 @@ from api import initial_fill_db
 app = Flask(__name__)
 app.secret_key = 'dev'
 csrf = CSRFProtect(app) # i have no idea what this does but we need it
+csrf.exempt(auth_bp)
 
 app.register_blueprint(auth_bp)
 
@@ -33,8 +34,9 @@ def admin():
     initial_fill_db(DATABASE)
     return redirect(url_for("index"))
 
-@requires_login
+
 @app.route("/bet")
+@requires_login
 def bet():
     username = session.get('username')
     matchday = 1
