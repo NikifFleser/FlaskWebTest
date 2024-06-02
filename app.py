@@ -4,7 +4,7 @@ from flask_wtf.csrf import CSRFProtect
 from db import init_db, get_db
 from auth import auth_bp, requires_admin, requires_login
 from requests import get as get_from
-from api import initial_fill_db
+from api import initial_fill_db, get_current_matchday
 
 
 app = Flask(__name__)
@@ -35,15 +35,19 @@ def admin():
     #initial_fill_db(DATABASE)
     return redirect(url_for("index"))
 
-
-@app.route("/bet")
+@app.route("/bet_route")
 @requires_login
-def bet():
+def bet_route():
+    matchday = get_current_matchday()
+    return redirect(url_for('bet', matchday=matchday))
+
+@app.route("/bet/<int:matchday>")
+@requires_login
+def bet(matchday):
     username = session.get('username')
-    matchday = 1
     db = get_db(DATABASE)
     matches = db.execute('SELECT * FROM matches WHERE matchday = ?',
-                            (matchday,)).fetchall()
+                         (matchday,)).fetchall()
 
     return render_template("bet.html", matches=matches, username=username)
 
