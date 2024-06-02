@@ -60,7 +60,6 @@ def update_bet():
 def update_bet_in_db(match_id, team, goals, user_id):
     db = get_db(DATABASE)
     db.execute(f"UPDATE bets SET {team}_goals = ? WHERE match_id = ? and user_id = ?", (goals, match_id, user_id))
-    print(f"updated bet nr {match_id}")
     db.commit()
 
 # Close the database connection at ?request? end

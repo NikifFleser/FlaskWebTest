@@ -28,7 +28,6 @@ def login():
                 session['username'] = username
                 session["user_id"] = user_id
                 next_url = request.args.get("next_url")
-                print(f"request.args.get('next_url'): {next_url}")
                 if next_url:
                     return redirect(next_url)
                 else:
@@ -61,12 +60,10 @@ def signup():
         db.commit()
         # update session
         user = db.execute('SELECT id FROM users WHERE username = ?', (username,)).fetchone()
-        print(user)
         session["username"] = username
         session["user_id"] = user[0]
         # create the empty bets for the new user
         games = db.execute("SELECT id FROM matches").fetchall()
-        print(games)
         for game in games:
             db.execute("INSERT INTO bets (user_id, match_id) VALUES (?, ?)", (user[0], game[0]))
         db.commit()
