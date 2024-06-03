@@ -44,12 +44,16 @@ def bet_route():
 @app.route("/bet/<int:matchday>")
 @requires_login
 def bet(matchday):
-    username = session.get('username')
+    username = session.get("username")
     db = get_db(DATABASE)
-    matches = db.execute('SELECT * FROM matches WHERE matchday = ?',
-                         (matchday,)).fetchall()
+    match_tuples = db.execute("SELECT * FROM matches WHERE matchday = ?",(matchday,)).fetchall()
+    matches = []
+    for match in match_tuples:
+        m_id = match[0]
+        bet = db.execute("SELECT team1_goals, team2_goals FROM bets WHERE user_id = ? and match_id = ?", (session["user_id"], m_id)).fetchone()
+        matches.append((m_id, match[1], match[2], bet[0], bet[1]))
 
-    return render_template("bet.html", matches=matches, username=username)
+    return render_template("bet.html", matches=matches, username=username, matchday=matchday)
 
 @app.route('/update_bet', methods=['POST'])
 def update_bet():

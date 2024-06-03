@@ -5,13 +5,50 @@ Place Your Bets
 {% endblock %}
 
 {% block content %}
+<style>
+    .header {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        margin-bottom: 20px;
+    }
+    .header form {
+        margin: 0 10px;
+    }
+    .header span {
+        font-size: 20px;
+        font-weight: bold;
+        margin: 0 10px;
+    }
+    .header button {
+        background: none;
+        border: none;
+        font-size: 20px;
+        cursor: pointer;
+    }
+    .header button:disabled {
+        cursor: not-allowed;
+        color: grey;
+    }
+</style>
+
+<div class="header">
+    <form method="GET" action="{{ url_for('bet', matchday=matchday - 1) }}">
+        <button type="submit" {% if matchday <= 1 %}disabled{% endif %}><i class="fas fa-arrow-left"></i></button>
+    </form>
+    <span>Matchday {{ matchday }}</span>
+    <form method="GET" action="{{ url_for('bet', matchday=matchday + 1) }}">
+        <button type="submit" {% if matchday >= 7 %}disabled{% endif %}><i class="fas fa-arrow-right"></i></button>
+    </form>
+</div>
+
 <form method="POST">
     {% for match in matches %}
         <div class="match-container">
             <span class="team1-name">{{ match[1] }}</span>
-            <input type="number" name="match_{{ match[0] }}_team1_goals" min="0" max="9" class="goal-input" data-match-id="{{ match[0] }}" data-team="team1">
+            <input type="number" value="{{match[3]}}" name="match_{{ match[0] }}_team1_goals" min="0" max="9" class="goal-input" data-match-id="{{ match[0] }}" data-team="team1">
             <span class="vs">vs</span>
-            <input type="number" name="match_{{ match[0] }}_team2_goals" min="0" max="9" class="goal-input" data-match-id="{{ match[0] }}" data-team="team2">
+            <input type="number" value="{{match[4]}}" name="match_{{ match[0] }}_team2_goals" min="0" max="9" class="goal-input" data-match-id="{{ match[0] }}" data-team="team2">
             <span class="team2-name">{{ match[2] }}</span>
         </div>
         <br>

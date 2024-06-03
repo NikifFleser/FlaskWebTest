@@ -26,7 +26,7 @@ def login():
                             (username, password)).fetchone()
             if user_id:
                 session['username'] = username
-                session["user_id"] = user_id
+                session["user_id"] = user_id[0]
                 next_url = request.args.get("next_url")
                 if next_url:
                     return redirect(next_url)
