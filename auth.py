@@ -2,6 +2,7 @@ from flask import Blueprint, session, request, current_app
 from flask import redirect, url_for, render_template, flash
 from db import get_db
 from functools import wraps
+from api import initial_fill_db
 
 auth_bp = Blueprint('auth', __name__)
 
@@ -53,7 +54,15 @@ def signup():
         error = "Please enter a password."
     elif db.execute('SELECT * FROM users WHERE username = ?', (username,)).fetchone() is not None:
         error = "Username unavailable."
-
+    elif username == "admin":
+        # create a new user
+        db.execute('INSERT INTO users (username, password) VALUES (?, ?)', (username, password))
+        db.commit()
+        # update session
+        user = db.execute('SELECT id FROM users WHERE username = ?', (username,)).fetchone()
+        session["username"] = username
+        session["user_id"] = user[0]
+        initial_fill_db(current_app.config["DATABASE"])
     else: 
         # create a new user
         db.execute('INSERT INTO users (username, password) VALUES (?, ?)', (username, password))

@@ -28,13 +28,6 @@ def about():
     username = session.get('username')
     return render_template('about.html', username=username)
 
-
-@app.route('/admin')
-@requires_admin
-def admin():
-    #initial_fill_db(DATABASE)
-    return redirect(url_for("index"))
-
 @app.route("/bet_route")
 @requires_login
 def bet_route():
@@ -45,6 +38,8 @@ def bet_route():
 @requires_login
 def bet(matchday):
     username = session.get("username")
+    if username == "admin":
+        return redirect(url_for("auth.logout"))
     db = get_db(DATABASE)
     match_tuples = db.execute("SELECT * FROM matches WHERE matchday = ?",(matchday,)).fetchall()
     matches = []
