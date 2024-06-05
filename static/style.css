@@ -103,3 +103,52 @@ h1 {
     padding: 10px 20px;
     font-size: 16px;
 }
+
+.sidenav {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 20px;
+}
+.sidenav form {
+    margin: 0 10px;
+}
+.sidenav span {
+    font-size: 20px;
+    font-weight: bold;
+    margin: 0 10px;
+}
+.sidenav button {
+    background: none;
+    border: none;
+    font-size: 20px;
+    cursor: pointer;
+}
+.sidenav button:disabled {
+    cursor: not-allowed;
+    color: grey;
+}
+
+.closed-match-container {
+    display: grid;
+    grid-template-columns: 1fr auto auto auto 1fr;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    margin-top: 16px;
+    margin-bottom: 16px;
+}
+.team1-name,
+.team2-name,
+.score {
+    font-weight: bold;
+    margin: 0 10px;
+}
+.vs {
+    text-align: center;
+    font-weight: bold;
+    margin: 0 10px;
+}
+.closed-match-container > span {
+    margin: 0 5px;
+}

@@ -12,13 +12,12 @@
         <nav class="navbar">
             <ul class="navbar-list">
                 <li class="navbar-item"><a href="/">Home</a></li>
-                <li class="navbar-item"><a href="/about">About</a></li>
                 <li class="navbar-item"><a href="/bet_route">Bet</a></li>
                 {% if username %}
                 <li class="navbar-item"><a href="/logout">Logout</a></li>
-                {% if username == "admin" %}
+                    {% if username == "admin" %}
                 
-                {% endif %}
+                    {% endif %}
                 {% else %}
                 <li class="navbar-item"><a href="/login">Login</a></li>
                 <li class="navbar-item"><a href="/signup">Signup</a></li>
