@@ -53,6 +53,17 @@ h1 {
     color: #333;
 }
 
+.left {
+    align-items: left;
+    text-align: left;
+    float: left;
+}
+.right {
+    align-items: right;
+    text-align: right;
+    float: right;
+}
+
 /* Bet site styling */
 .match-container {
     display: grid;
@@ -61,25 +72,28 @@ h1 {
     justify-content: center;
     gap: 10px;
 }
-.team1-name {
-    font-weight: bold;
-    text-align: right;
-    margin-right: 10px;
+.fi {
+    font-size: 36px;
+    font-weight: bolder;
+    border: 2px solid #000000;
+    margin: 0px;
+    padding: 0px;
+    box-shadow: 6px 8px 10px rgba(0, 0, 0, 0.3);
+    border-radius: 7px;
+    line-height: 0;
 }
-.team2-name {
-    font-weight: bold;
-    text-align: left;
-    margin-right: 10px;
-}
+
 .goal-input {
     width: 60px;
     height: 60px;
-    font-size: 24px;
+    font-size: 26px;
     text-align: center;
-    border: 2px solid #007BFF;
+    border: 3px solid #007BFF;
     border-radius: 10px;
     padding: 5px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    margin-top: 2px;
+    margin-bottom: 2px;
+    box-shadow: 0 6px 10px rgba(0, 0, 0, 0.1);
     transition: border-color 0.3s, box-shadow 0.3s;
 }
 .goal-input::-webkit-inner-spin-button,
@@ -98,7 +112,7 @@ input[type="number"]::-webkit-inner-spin-button {
     -webkit-appearance: none;
     margin: 0;
 }
-/* Hide default spinner arrows in Firefox */
+/* Hide default spinner arrows in Firefox*/
 input[type="number"] {
     -moz-appearance: textfield;
 }

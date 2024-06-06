@@ -2,6 +2,33 @@ from flask import g
 from datetime import datetime, timedelta
 import sqlite3
 
+country_dict = {
+    "Albanien": "al",
+    "Belgien": "be",
+    "Deutschland": "de",
+    "Dänemark": "dk",
+    "England": "gb-eng",
+    "Frankreich": "fr",
+    "Georgien": "ge",
+    "Italien": "it",
+    "Kroatien": "hr",
+    "Niederlande": "nl",
+    "Polen": "pl",
+    "Portugal": "pt",
+    "Rumänien": "ro",
+    "Schottland": "gb-sct",
+    "Schweiz": "ch",
+    "Serbien": "rs",
+    "Slowakei": "sk",
+    "Slowenien": "si",
+    "Spanien": "es",
+    "Tschechien": "cz",
+    "Türkei": "tr",
+    "Ukraine": "ua",
+    "Ungarn": "hu",
+    "Österreich": "at"
+}
+
 def init_db(app, db_file):
     with app.app_context():
         db = get_db(db_file)

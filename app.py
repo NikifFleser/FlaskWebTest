@@ -1,7 +1,7 @@
 from flask import Flask, request, session, g
 from flask import render_template, redirect, url_for, jsonify
 from flask_wtf.csrf import CSRFProtect
-from db import init_db, get_db, update_bet_in_db
+from db import init_db, get_db, update_bet_in_db, country_dict
 from auth import auth_bp, requires_admin, requires_login
 from requests import get as get_from
 from api import initial_fill_db, get_current_matchday
@@ -38,6 +38,7 @@ def bet_route():
 @app.route("/bet/<int:matchday>")
 @requires_login
 def bet(matchday):
+    dct = country_dict
     username = session.get("username")
     if username == "admin":
         return redirect(url_for("auth.logout"))
@@ -50,9 +51,9 @@ def bet(matchday):
         m_date = datetime.strptime(match[3], "%Y-%m-%dT%H:%M:%S")
         bet = db.execute("SELECT team1_goals, team2_goals FROM bets WHERE user_id = ? and match_id = ?", (session["user_id"], m_id)).fetchone()
         if m_date < current_date:
-            matches.append((m_id, match[1], match[2], bet[0], bet[1], True))
+            matches.append((m_id, dct[match[1]], dct[match[2]], bet[0], bet[1], True))
         else:
-            matches.append((m_id, match[1], match[2], bet[0], bet[1], False))
+            matches.append((m_id, dct[match[1]], dct[match[2]], bet[0], bet[1], False))
     return render_template("bet.html", matches=matches, username=username, matchday=matchday)
 
 @app.route('/update_bet', methods=['POST'])
