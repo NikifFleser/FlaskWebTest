@@ -19,7 +19,12 @@ Place Your Bets
 <form method="POST">
     {% for match in matches %}
     <div class="match-container">
-        <div class="right"><span class="fi fi-{{match[1]}}"></span></div>
+        <div class="right">
+            <div class="country">
+            <span class="fi fi-{{match[1]}}"></span>
+            <span>{{match[6]}}</span>
+            </div>
+        </div>
         <input type="number" value="{{ match[3] }}" 
                name="match_{{ match[0] }}_team1_goals" min="0" max="9" 
                class="goal-input" data-match-id="{{ match[0] }}" data-team="team1" 
@@ -29,7 +34,12 @@ Place Your Bets
                name="match_{{ match[0] }}_team2_goals" min="0" max="9" 
                class="goal-input" data-match-id="{{ match[0] }}" data-team="team2" 
                {% if match[5] %}disabled{% endif %}>
-        <div class="left"><span class="fi fi-{{match[2]}}"></span></div>
+        <div class="left">
+            <div class="country">
+            <span class="fi fi-{{match[2]}}"></span>
+            <span>{{match[7]}}</span>
+            </div>
+        </div>
     </div>
     {% endfor %}
 </form>

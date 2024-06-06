@@ -51,9 +51,9 @@ def bet(matchday):
         m_date = datetime.strptime(match[3], "%Y-%m-%dT%H:%M:%S")
         bet = db.execute("SELECT team1_goals, team2_goals FROM bets WHERE user_id = ? and match_id = ?", (session["user_id"], m_id)).fetchone()
         if m_date < current_date:
-            matches.append((m_id, dct[match[1]], dct[match[2]], bet[0], bet[1], True))
+            matches.append((m_id, dct[match[1]], dct[match[2]], bet[0], bet[1], True, match[1], match[2]))
         else:
-            matches.append((m_id, dct[match[1]], dct[match[2]], bet[0], bet[1], False))
+            matches.append((m_id, dct[match[1]], dct[match[2]], bet[0], bet[1], False, match[1], match[2]))
     return render_template("bet.html", matches=matches, username=username, matchday=matchday)
 
 @app.route('/update_bet', methods=['POST'])
@@ -75,4 +75,4 @@ def close_db_connection(exception):
         db.close()
 
 if __name__ == '__main__':
-    app.run(debug=True)#, host="0.0.0.0")
+    app.run(debug=True, host="0.0.0.0")
