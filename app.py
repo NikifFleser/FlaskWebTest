@@ -43,18 +43,17 @@ def bet(matchday):
         return redirect(url_for("auth.logout"))
     db = get_db(DATABASE)
     match_tuples = db.execute("SELECT id, team1, team2, date FROM matches WHERE matchday = ?",(matchday,)).fetchall()
-    o_m = []
-    c_m = []
+    matches = []
     current_date = datetime.now() + timedelta(days=11)
     for match in match_tuples:
         m_id = match[0]
-        m_date = datetime.strptime(match[3], '%Y-%m-%dT%H:%M:%S')
+        m_date = datetime.strptime(match[3], "%Y-%m-%dT%H:%M:%S")
         bet = db.execute("SELECT team1_goals, team2_goals FROM bets WHERE user_id = ? and match_id = ?", (session["user_id"], m_id)).fetchone()
         if m_date < current_date:
-            c_m.append((m_id, match[1], match[2], bet[0], bet[1]))
+            matches.append((m_id, match[1], match[2], bet[0], bet[1], True))
         else:
-            o_m.append((m_id, match[1], match[2], bet[0], bet[1]))
-    return render_template("bet.html", open_matches=o_m, closed_matches =c_m, username=username, matchday=matchday)
+            matches.append((m_id, match[1], match[2], bet[0], bet[1], False))
+    return render_template("bet.html", matches=matches, username=username, matchday=matchday)
 
 @app.route('/update_bet', methods=['POST'])
 def update_bet():
@@ -65,7 +64,7 @@ def update_bet():
     user_id = session["user_id"]
     if update_bet_in_db(DATABASE, match_id, team, goals, user_id):
         return jsonify({'status': 'success', 'match_id': match_id, 'team': team, 'goals': goals})
-    return redirect(url_for("bet_route"))
+    return jsonify({'status': 'failure'})
 
 # Close the database connection at ?request? end
 @app.teardown_appcontext

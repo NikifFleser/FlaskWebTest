@@ -19,7 +19,7 @@ def get_db(db_file):
     return db
 
 def update_bet_in_db(db_file, match_id, team, goals, user_id):
-    current_date = datetime.now()# + timedelta(days=10)
+    current_date = datetime.now() + timedelta(days=11)
     db = get_db(db_file)
     match_date = db.execute("SELECT date FROM matches WHERE id = ?", (match_id,)).fetchone()
     if datetime.strptime(match_date[0], '%Y-%m-%dT%H:%M:%S') > current_date:

@@ -19,10 +19,16 @@ document.addEventListener('DOMContentLoaded', (event) => {
                     team: team,
                     goals: goals
                 })
-            }).then(response => response.json())
+            })
+            .then(response => response.json())
               .then(data => {
-                  console.log('Success:', data);
-              }).catch((error) => {
+                if (data.status === 'success') {
+                    console.log('Bet updated successfully:', data);
+                } else {
+                    window.location.href = '/bet_route'; // Redirect to the desired route on failure
+                }
+            })
+              .catch((error) => {
                   console.error('Error:', error);
               });
         });

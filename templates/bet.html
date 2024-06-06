@@ -16,28 +16,21 @@ Place Your Bets
     </form>
 </div>
 
-<div>
-    {% for match in closed_matches %}
-    <div class="closed-match-container">
+<form method="POST">
+    {% for match in matches %}
+    <div class="match-container">
         <span class="team1-name">{{ match[1] }}</span>
-        <span class="score">{{ match[3] }}</span>
+        <input type="number" value="{{ match[3] }}" 
+               name="match_{{ match[0] }}_team1_goals" min="0" max="9" 
+               class="goal-input" data-match-id="{{ match[0] }}" data-team="team1" 
+               {% if match[5] %}disabled{% endif %}>
         <span class="vs">:</span>
-        <span class="score">{{ match[4] }}</span>
+        <input type="number" value="{{ match[4] }}" 
+               name="match_{{ match[0] }}_team2_goals" min="0" max="9" 
+               class="goal-input" data-match-id="{{ match[0] }}" data-team="team2" 
+               {% if match[5] %}disabled{% endif %}>
         <span class="team2-name">{{ match[2] }}</span>
     </div>
-    {% endfor %}
-</div>
-
-<form method="POST">
-    {% for match in open_matches %}
-        <div class="match-container">
-            <span class="team1-name">{{ match[1] }}</span>
-            <input type="number" value="{{match[3]}}" name="match_{{ match[0] }}_team1_goals" min="0" max="9" class="goal-input" data-match-id="{{ match[0] }}" data-team="team1">
-            <span class="vs">:</span>
-            <input type="number" value="{{match[4]}}" name="match_{{ match[0] }}_team2_goals" min="0" max="9" class="goal-input" data-match-id="{{ match[0] }}" data-team="team2">
-            <span class="team2-name">{{ match[2] }}</span>
-        </div>
-        <br>
     {% endfor %}
 </form>
 
