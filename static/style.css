@@ -121,12 +121,13 @@ h1 {
 }
 input[type="number"]::-webkit-outer-spin-button,
 input[type="number"]::-webkit-inner-spin-button {
+    appearance: none;
     -webkit-appearance: none;
     margin: 0;
 }
-/* Hide default spinner arrows in Firefox*/
 input[type="number"] {
-    -moz-appearance: textfield;
+    appearance: none;
+    -moz-appearance: textfield; /* Firefox */
 }
 .vs {
     text-align: center;
