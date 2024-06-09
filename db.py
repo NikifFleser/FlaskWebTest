@@ -54,3 +54,6 @@ def update_bet_in_db(db_file, match_id, team, goals, user_id):
         db.commit()
         return True
     return False
+
+def update_user_score(db_file, user_id):
+    return None

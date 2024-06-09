@@ -67,6 +67,12 @@ def update_bet():
         return jsonify({'status': 'success', 'match_id': match_id, 'team': team, 'goals': goals})
     return jsonify({'status': 'failure'})
 
+@app.route("/leaderboard")
+def leaderboard():
+    db = get_db(DATABASE)
+    users = db.execute("SELECT username, score FROM users ORDER BY score DESC").fetchall()
+    return render_template("leaderboard.html", users=users)
+
 # Close the database connection at ?request? end
 @app.teardown_appcontext
 def close_db_connection(exception):

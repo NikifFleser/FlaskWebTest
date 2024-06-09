@@ -3,6 +3,7 @@ from flask import redirect, url_for, render_template, flash
 from db import get_db
 from functools import wraps
 from api import initial_fill_db
+import random
 
 auth_bp = Blueprint('auth', __name__)
 
@@ -42,6 +43,8 @@ def signup():
     if request.method == 'GET':
         return render_template("signup.html", error=None)
     
+    default_score = random.randint(0, 10)
+
     # request.method is 'POST'
     error = None
     username = request.form.get('username')
@@ -56,7 +59,7 @@ def signup():
         error = "Username unavailable."
     elif username == "admin":
         # create a new user
-        db.execute('INSERT INTO users (username, password) VALUES (?, ?)', (username, password))
+        db.execute('INSERT INTO users (username, password, score) VALUES (?, ?, ?)', (username, password, default_score))
         db.commit()
         # update session
         user = db.execute('SELECT id FROM users WHERE username = ?', (username,)).fetchone()
@@ -65,7 +68,7 @@ def signup():
         initial_fill_db(current_app.config["DATABASE"])
     else: 
         # create a new user
-        db.execute('INSERT INTO users (username, password) VALUES (?, ?)', (username, password))
+        db.execute('INSERT INTO users (username, password, score) VALUES (?, ?, ?)', (username, password, default_score))
         db.commit()
         # update session
         user = db.execute('SELECT id FROM users WHERE username = ?', (username,)).fetchone()

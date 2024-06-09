@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+
+{% block title %}
+Leaderboard
+{% endblock %}
+
+{% block content %}
+<body>
+    <h1>Leaderboard</h1>
+    <table>
+        <tr>
+            <th>Spieler</th>
+            <th>Punkte</th>
+        </tr>
+        {% for user in users %}
+            <tr>
+                <td>{{ user[0] }}</td>
+                <td>{{ user[1] }}</td>
+            </tr>
+        {% endfor %}
+    </table>
+</body>
+{% endblock %}
