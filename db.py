@@ -49,7 +49,7 @@ def get_db(db_file):
     return db
 
 def update_bet_in_db(db_file, match_id, team, goals, user_id):
-    current_date = datetime.now() + timedelta(days=11)
+    current_date = datetime.now() + timedelta(days=-360)
     db = get_db(db_file)
     match_date = db.execute("SELECT date FROM matches WHERE id = ?", (match_id,)).fetchone()
     if datetime.strptime(match_date[0], '%Y-%m-%dT%H:%M:%S') > current_date:
@@ -61,11 +61,10 @@ def update_bet_in_db(db_file, match_id, team, goals, user_id):
 
 def update_bet_score(db_file, bet_id):
     db = get_db(db_file)
-    bet = db.execute("SELECT * FROM bets WHERE id = ?", (bet_id,)).fetchone()
-    match_id = bet["match_id"]
-    match = db.execute("SELECT * FROM matches WHERE id = ?", (match_id,)).fetchone()
-    match_result = match["result"] # What do I get here? "0:1" or something else? 
-    bet_score = evaluate_bet_score(bet["team1_goal"], bet["team2_goal"], match_result)
+    bet = db.execute("SELECT match_id, team1_goals, team2_goals FROM bets WHERE id = ?", (bet_id,)).fetchone()
+    match_id = bet[0]
+    match_result = db.execute("SELECT result FROM matches WHERE id = ?", (match_id,)).fetchone()[0]
+    bet_score = evaluate_bet_score(bet[1], bet[2], match_result)
     db.execute("UPDATE bets SET bet_score = ? WHERE id = ?", (bet_score, bet_id))
     db.commit()
 

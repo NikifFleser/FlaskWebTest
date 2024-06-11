@@ -1,7 +1,7 @@
 from flask import Flask, request, session, g
 from flask import render_template, redirect, url_for, jsonify
 from flask_wtf.csrf import CSRFProtect
-from db import init_db, get_db, update_bet_in_db, country_dict
+from db import init_db, get_db, update_bet_in_db, country_dict, update_bet_score
 from auth import auth_bp, requires_admin, requires_login
 from requests import get as get_from
 from api import initial_fill_db, get_current_matchday
@@ -45,7 +45,7 @@ def bet(matchday):
     db = get_db(DATABASE)
     match_tuples = db.execute("SELECT id, team1, team2, date FROM matches WHERE matchday = ?",(matchday,)).fetchall()
     matches = []
-    current_date = datetime.now() + timedelta(days=11)
+    current_date = datetime.now() + timedelta(days=-360)
     for match in match_tuples:
         flag_t1, flag_t2 = "xx", "xx"
         m_id = match[0]
@@ -81,6 +81,17 @@ def leaderboard():
     db = get_db(DATABASE)
     users = db.execute("SELECT username, score FROM users ORDER BY score DESC").fetchall()
     return render_template("leaderboard.html", users=users, username=username)
+
+# Let's use url to update stuff. This is a very hacky way and it only updates for the user in the session
+@app.route("/update_user_bet")
+def update_user_bet():
+    user_id = session["user_id"]
+    db = get_db(DATABASE)
+    bets = db.execute("SELECT id FROM bets WHERE user_id = ?", (user_id,)).fetchmany(9)
+    for bet_id in bets:
+        update_bet_score(DATABASE, bet_id[0])
+    return f"Updated bets for user {user_id}"
+
 
 # Close the database connection at ?request? end
 @app.teardown_appcontext

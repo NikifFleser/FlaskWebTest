@@ -2,7 +2,7 @@ from requests import get as get_from
 from db import get_db
 from datetime import datetime, timedelta
 
-def get_games(matchday="1", season="2024", tournament="em"):
+def get_games(matchday="1", season="2023", tournament="bl1"):
     url = f"https://api.openligadb.de/getmatchdata/{tournament}/{season}/{matchday}"
     response = get_from(url)
     data = response.json()
