@@ -3,6 +3,9 @@ from datetime import datetime, timedelta
 import sqlite3
 
 country_dict = {
+    "Noch Offen": "xx",
+    "noch offen": "xx",
+    "TBD": "xx",
     "Albanien": "al",
     "Belgien": "be",
     "Deutschland": "de",
