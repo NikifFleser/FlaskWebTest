@@ -69,9 +69,10 @@ def update_bet():
 
 @app.route("/leaderboard")
 def leaderboard():
+    username = session.get("username")
     db = get_db(DATABASE)
     users = db.execute("SELECT username, score FROM users ORDER BY score DESC").fetchall()
-    return render_template("leaderboard.html", users=users)
+    return render_template("leaderboard.html", users=users, username=username)
 
 # Close the database connection at ?request? end
 @app.teardown_appcontext
