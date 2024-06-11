@@ -47,13 +47,21 @@ def bet(matchday):
     matches = []
     current_date = datetime.now() + timedelta(days=11)
     for match in match_tuples:
+        flag_t1, flag_t2 = "xx", "xx"
         m_id = match[0]
         m_date = datetime.strptime(match[3], "%Y-%m-%dT%H:%M:%S")
         bet = db.execute("SELECT team1_goals, team2_goals FROM bets WHERE user_id = ? and match_id = ?", (session["user_id"], m_id)).fetchone()
+        if match[1] in dct:
+            flag_t1 = dct[match[1]]
+        if match[2] in dct:
+            flag_t2 = dct[match[2]]
+            
         if m_date < current_date:
-            matches.append((m_id, dct[match[1]], dct[match[2]], bet[0], bet[1], True, match[1], match[2]))
+            disable = True
         else:
-            matches.append((m_id, dct[match[1]], dct[match[2]], bet[0], bet[1], False, match[1], match[2]))
+            disable = False
+        matches.append((m_id, flag_t1, flag_t2, bet[0], bet[1], disable, match[1], match[2]))
+        
     return render_template("bet.html", matches=matches, username=username, matchday=matchday)
 
 @app.route('/update_bet', methods=['POST'])
