@@ -15,7 +15,7 @@ def get_games(matchday="1", season="2024", tournament="em"):
         game["date"] = raw_game["matchDateTime"]
         game["team1"] = raw_game['team1']['teamName']
         game["team2"] = raw_game['team2']['teamName']
-        game["location"] = raw_game["location"]["locationCity"]
+        game["location"] = "none"#raw_game["location"]["locationCity"]
         game["matchday"] = matchday
 
         result = raw_game["matchResults"]
