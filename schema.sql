@@ -2,7 +2,7 @@ CREATE TABLE IF NOT EXISTS users (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     username TEXT NOT NULL,
     password TEXT NOT NULL,
-    score INTEGER NOT NULL
+    score INTEGER
 );
 
 CREATE TABLE IF NOT EXISTS matches (
@@ -21,6 +21,7 @@ CREATE TABLE IF NOT EXISTS bets (
     match_id INTEGER NOT NULL,
     team1_goals INTEGER,
     team2_goals INTEGER,
+    bet_score INTEGER,
     FOREIGN KEY (user_id) REFERENCES user (id),
     FOREIGN KEY (match_id) REFERENCES match (id)
 );

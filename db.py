@@ -58,5 +58,49 @@ def update_bet_in_db(db_file, match_id, team, goals, user_id):
         return True
     return False
 
+
+def update_bet_score(db_file, bet_id):
+    db = get_db(db_file)
+    bet = db.execute("SELECT * FROM bets WHERE id = ?", (bet_id,)).fetchone()
+    match_id = bet["match_id"]
+    match = db.execute("SELECT * FROM matches WHERE id = ?", (match_id,)).fetchone()
+    match_result = match["result"] # What do I get here? "0:1" or something else? 
+    bet_score = evaluate_bet_score(bet["team1_goal"], bet["team2_goal"], match_result)
+    db.execute("UPDATE bets SET bet_score = ? WHERE id = ?", (bet_score, bet_id))
+    db.commit()
+
 def update_user_score(db_file, user_id):
     return None
+
+# This could be somewhere else but not sure if it makes sense to create a py file just for one function.
+def evaluate_bet_score(team1_goal, team2_goal, match_result):
+    ON_POINT = 3
+    GOAL_DIFF = 2
+    CORRECT_TEAM = 1
+    WRONG = 0
+
+    # We split a result like 3:1 into a list ["3", "1"].
+    m_result = match_result.split(":")
+
+    t1_goal = int(team1_goal)
+    t2_goal = int(team2_goal)
+    r1_goal = int(m_result[0])
+    r2_goal = int(m_result[1])
+    
+    # User betted on the correct team and the exact goal number.
+    if (t1_goal == r1_goal) and (t2_goal == r2_goal):
+        return ON_POINT
+    # User betted on the correct team and the correct goal difference.
+    elif (t1_goal - t2_goal) == (r1_goal - r2_goal):
+        return GOAL_DIFF
+    # User betted on the correct team.
+    elif (t1_goal - t2_goal < 0) and (r1_goal - r2_goal < 0):
+        return CORRECT_TEAM
+    elif (t1_goal - t2_goal == 0) and (r1_goal - r2_goal == 0):
+        return CORRECT_TEAM
+    elif (t1_goal - t2_goal > 0) and (r1_goal - r2_goal > 0):
+        return CORRECT_TEAM
+    # Users did not bet on the correct team.
+    else:
+        return WRONG
+    
