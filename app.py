@@ -1,10 +1,10 @@
 from flask import Flask, request, session, g
 from flask import render_template, redirect, url_for, jsonify
 from flask_wtf.csrf import CSRFProtect
-from db import init_db, get_db, update_bet_in_db, country_dict, update_bet_score
+from db import init_db, get_db, update_bet_in_db, country_dict, update_bet_score, column_exists
 from auth import auth_bp, requires_admin, requires_login
 from requests import get as get_from
-from api import initial_fill_db, get_current_matchday
+from api import get_current_matchday
 from datetime import datetime, timedelta
 
 
@@ -23,6 +23,7 @@ init_db(app, DATABASE)
 def index():
     username = session.get('username')
     return render_template('index.html', username=username)
+
 
 @app.route('/about')
 def about():
@@ -45,7 +46,7 @@ def bet(matchday):
     db = get_db(DATABASE)
     match_tuples = db.execute("SELECT id, team1, team2, date FROM matches WHERE matchday = ?",(matchday,)).fetchall()
     matches = []
-    current_date = datetime.now() + timedelta(days=-360)
+    current_date = datetime.now() + timedelta(days=4)
     for match in match_tuples:
         flag_t1, flag_t2 = "xx", "xx"
         m_id = match[0]

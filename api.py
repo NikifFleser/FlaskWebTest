@@ -1,8 +1,10 @@
 from requests import get as get_from
-from db import get_db
 from datetime import datetime, timedelta
 
 def get_games(matchday="1", season="2023", tournament="bl1"):
+    """returns a list of match-dicts with the following keys:
+    date, team1, team2, location, matchday, result"""
+
     url = f"https://api.openligadb.de/getmatchdata/{tournament}/{season}/{matchday}"
     response = get_from(url)
     data = response.json()
@@ -39,16 +41,6 @@ def get_current_matchday():
                 return matchday
     # If all matches have passed, return the last matchday
     return 7
-
-def initial_fill_db(db_file):
-    db = get_db(db_file)
-    for matchday in range(1, 8):
-        games = get_games(matchday)
-        for game in games:
-            db.execute(
-                'INSERT INTO matches (team1, team2, matchday, date, location, result) VALUES (?,?,?,?,?,?)',
-                (game["team1"], game["team2"], matchday, game["date"], game["location"], game["result"]))
-    db.commit()
 
 def update_db(db_file):
     pass

@@ -1,11 +1,17 @@
-from flask import g
+from flask import g, has_request_context
 from datetime import datetime, timedelta
 import sqlite3
+from api import get_games
+
+matchday_list = ["Gruppenphase Spieltag 1",
+                 "Gruppenphase Spieltag 2",
+                 "Gruppenphase Spieltag 3",
+                 "Achtelfinale",
+                 "Viertelfinale",
+                 "Halbfinale",
+                 "Finale"]
 
 country_dict = {
-    "Noch Offen": "xx",
-    "noch offen": "xx",
-    "TBD": "xx",
     "Albanien": "al",
     "Belgien": "be",
     "Deutschland": "de",
@@ -32,6 +38,17 @@ country_dict = {
     "Österreich": "at"
 }
 
+def column_exists(db_file, table_name, column_name):
+    db = get_db(db_file)
+    infos = db.execute(f"PRAGMA table_info({table_name})").fetchall()
+    columns = [info[1] for info in infos]
+    return column_name in columns
+
+def check_table_empty(db_file, table_name):
+    db = get_db(db_file)
+    row_count = db.execute(f"SELECT COUNT(*) FROM {table_name}").fetchone()[0]
+    return row_count <= 0
+
 def init_db(app, db_file):
     with app.app_context():
         db = get_db(db_file)
@@ -40,16 +57,37 @@ def init_db(app, db_file):
             cursor = db.cursor()
             cursor.executescript(script)
         db.commit()
+    update_matches(db_file)
 
+def update_matches(db_file):
+    db = get_db(db_file)
+    if check_table_empty(db_file, "matches"):
+        for matchday in range(1, 8):
+            games = get_games(matchday)
+            for game in games:
+                db.execute(
+                    'INSERT INTO matches (team1, team2, matchday, date, location, result) VALUES (?,?,?,?,?,?)',
+                    (game["team1"], game["team2"], matchday, game["date"], game["location"], game["result"]))
+    else:
+        for matchday in range(1, 8):
+            games = get_games(matchday)
+            for game in games:
+                db.execute("UPDATE matches SET result = ? WHERE matchday = ? AND team1 = ?",
+                           (game["result"], matchday, game["team1"]))
+    db.commit()
+        
 def get_db(db_file):
-    db = getattr(g, 'database', None)
-    if db is None:
-        db  = sqlite3.connect(db_file)
-        g.database = db
-    return db
+    if has_request_context():
+        db = getattr(g, 'database', None)
+        if db is None:
+            db = sqlite3.connect(db_file)
+            g.database = db
+        return db
+    else:
+        return sqlite3.connect(db_file)
 
 def update_bet_in_db(db_file, match_id, team, goals, user_id):
-    current_date = datetime.now() + timedelta(days=-360)
+    current_date = datetime.now() + timedelta(days=4)
     db = get_db(db_file)
     match_date = db.execute("SELECT date FROM matches WHERE id = ?", (match_id,)).fetchone()
     if datetime.strptime(match_date[0], '%Y-%m-%dT%H:%M:%S') > current_date:
