@@ -6,7 +6,9 @@ from auth import auth_bp, requires_admin, requires_login
 from requests import get as get_from
 from api import get_current_matchday
 from datetime import datetime, timedelta
-
+from schedule import every, run_pending
+from threading import Thread
+from time import sleep
 
 app = Flask(__name__)
 app.secret_key = 'dev'
@@ -101,5 +103,16 @@ def close_db_connection(exception):
     if db is not None:
         db.close()
 
+def background():
+    every(5).minutes.do(update_live)
+    while True:
+        run_pending()
+        sleep(1)
+
+def update_live():
+    print("updating in the background")
+
 if __name__ == '__main__':
+    thread = Thread(target=background)
+    thread.start()
     app.run(debug=True, host="0.0.0.0")
