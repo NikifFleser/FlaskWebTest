@@ -1,7 +1,7 @@
 from flask import Flask, request, session, g
 from flask import render_template, redirect, url_for, jsonify
 from flask_wtf.csrf import CSRFProtect
-from db import init_db, get_db, update_bet_in_db, country_dict, update_bet_score, column_exists
+from db import init_db, get_db, update_bet_in_db, country_dict, update_bet_score, column_exists, update_bet_scores
 from auth import auth_bp, requires_admin, requires_login
 from requests import get as get_from
 from api import get_current_matchday
@@ -48,7 +48,7 @@ def bet(matchday):
     db = get_db(DATABASE)
     match_tuples = db.execute("SELECT id, team1, team2, date FROM matches WHERE matchday = ?",(matchday,)).fetchall()
     matches = []
-    current_date = datetime.now() + timedelta(days=4)
+    current_date = datetime.now() + timedelta(days=0)
     for match in match_tuples:
         flag_t1, flag_t2 = "xx", "xx"
         m_id = match[0]
@@ -94,6 +94,16 @@ def update_user_bet():
     for bet_id in bets:
         update_bet_score(DATABASE, bet_id[0])
     return f"Updated bets for user {user_id}"
+
+@app.route("/update_bets/<int:match_id>")
+def update_bets(match_id):
+    # To test it, I am goona input dummy data
+    dummy_result = "1:0"
+    db = get_db(DATABASE)
+    db.execute("UPDATE matches SET result = ? WHERE id = ?", (dummy_result, match_id))
+    db.commit()
+    update_bet_scores(DATABASE, match_id)
+    return f"Updated bets for match {match_id}."
 
 
 # Close the database connection at ?request? end

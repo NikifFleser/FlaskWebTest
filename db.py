@@ -87,7 +87,7 @@ def get_db(db_file):
         return sqlite3.connect(db_file)
 
 def update_bet_in_db(db_file, match_id, team, goals, user_id):
-    current_date = datetime.now() + timedelta(days=4)
+    current_date = datetime.now() + timedelta(days=0)
     db = get_db(db_file)
     match_date = db.execute("SELECT date FROM matches WHERE id = ?", (match_id,)).fetchone()
     if datetime.strptime(match_date[0], '%Y-%m-%dT%H:%M:%S') > current_date:
@@ -96,7 +96,7 @@ def update_bet_in_db(db_file, match_id, team, goals, user_id):
         return True
     return False
 
-
+# We update the score of one bet via its bet_id.
 def update_bet_score(db_file, bet_id):
     db = get_db(db_file)
     bet = db.execute("SELECT match_id, team1_goals, team2_goals FROM bets WHERE id = ?", (bet_id,)).fetchone()
@@ -104,6 +104,18 @@ def update_bet_score(db_file, bet_id):
     match_result = db.execute("SELECT result FROM matches WHERE id = ?", (match_id,)).fetchone()[0]
     bet_score = evaluate_bet_score(bet[1], bet[2], match_result)
     db.execute("UPDATE bets SET bet_score = ? WHERE id = ?", (bet_score, bet_id))
+    db.commit()
+
+# We update all bets for one specific match which is given by a match_id.
+def update_bet_scores(db_file, match_id):
+    db = get_db(db_file)
+    bet_table = db.execute("SELECT id, team1_goals, team2_goals FROM bets WHERE match_id = ?", (match_id,)).fetchall()
+    for bet in bet_table:
+        bet_id = bet[0]
+        match_result = db.execute("SELECT result FROM matches WHERE id = ?", (match_id,)).fetchone()[0]
+        bet_score = evaluate_bet_score(bet[1], bet[2], match_result)
+        db.execute("UPDATE bets SET bet_score = ? WHERE id = ?", (bet_score, bet_id))
+    # Either commit after ever execution or once after multiple executions.
     db.commit()
 
 def update_user_score(db_file, user_id):
