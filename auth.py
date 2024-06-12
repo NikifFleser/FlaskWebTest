@@ -42,7 +42,7 @@ def signup():
     if request.method == 'GET':
         return render_template("signup.html", error=None)
     
-    default_score = random.randint(0, 10)
+    default_score = 0 # random.randint(0, 10)
 
     # request.method is 'POST'
     error = None

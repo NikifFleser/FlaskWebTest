@@ -97,14 +97,14 @@ def update_bet_in_db(db_file, match_id, team, goals, user_id):
     return False
 
 # We update the score of one bet via its bet_id.
-def update_bet_score(db_file, bet_id):
-    db = get_db(db_file)
-    bet = db.execute("SELECT match_id, team1_goals, team2_goals FROM bets WHERE id = ?", (bet_id,)).fetchone()
-    match_id = bet[0]
-    match_result = db.execute("SELECT result FROM matches WHERE id = ?", (match_id,)).fetchone()[0]
-    bet_score = evaluate_bet_score(bet[1], bet[2], match_result)
-    db.execute("UPDATE bets SET bet_score = ? WHERE id = ?", (bet_score, bet_id))
-    db.commit()
+# def update_bet_score(db_file, bet_id):
+#     db = get_db(db_file)
+#     bet = db.execute("SELECT match_id, team1_goals, team2_goals FROM bets WHERE id = ?", (bet_id,)).fetchone()
+#     match_id = bet[0]
+#     match_result = db.execute("SELECT result FROM matches WHERE id = ?", (match_id,)).fetchone()[0]
+#     bet_score = evaluate_bet_score(bet[1], bet[2], match_result)
+#     db.execute("UPDATE bets SET bet_score = ? WHERE id = ?", (bet_score, bet_id))
+#     db.commit()
 
 # We update all bets for one specific match which is given by a match_id.
 def update_bet_scores(db_file, match_id):
@@ -118,15 +118,28 @@ def update_bet_scores(db_file, match_id):
     # Either commit after ever execution or once after multiple executions.
     db.commit()
 
-def update_user_score(db_file, user_id):
-    return None
-
+def update_user_scores(db_file):
+    db = get_db(db_file)
+    # user_ids = db.execute("SELECT id FROM users").fetchall()
+    # for user in user_ids:
+    #     user_id = user[0]
+    user_scores = db.execute("SELECT user_id, SUM(bet_score) FROM bets GROUP BY user_id").fetchall()
+    for user in user_scores:
+        user_id = user[0]
+        score = user[1]
+        db.execute("UPDATE users SET score = ? WHERE id = ?", (score, user_id))
+    db.commit()
+    
 # This could be somewhere else but not sure if it makes sense to create a py file just for one function.
 def evaluate_bet_score(team1_goal, team2_goal, match_result):
     ON_POINT = 3
     GOAL_DIFF = 2
     CORRECT_TEAM = 1
     WRONG = 0
+
+    # We check if the user has even set a bet. If not, return 0 points.
+    if (team1_goal == None) or (team2_goal == None):
+        return WRONG
 
     # We split a result like 3:1 into a list ["3", "1"].
     m_result = match_result.split(":")
