@@ -67,7 +67,7 @@ def signup():
         # create the empty bets for the new user
         games = db.execute("SELECT id FROM matches").fetchall()
         for game in games:
-            db.execute("INSERT INTO bets (user_id, match_id) VALUES (?, ?)", (user[0], game[0]))
+            db.execute("INSERT INTO bets (user_id, match_id, bet_score) VALUES (?, ?, ?)", (user[0], game[0], 0))
         db.commit()
     if error:
         return render_template("signup.html", error=error)
