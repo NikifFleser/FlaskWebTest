@@ -1,7 +1,7 @@
 from flask import g, has_request_context
 from datetime import datetime, timedelta
 import sqlite3
-from api import get_games, DAYS
+from api import get_games, get_current_matchday, DAYS
 from numpy import sign
 
 matchday_list = ["Gruppenphase Spieltag 1",
@@ -77,11 +77,11 @@ def update_matches(db_file):
                     'INSERT INTO matches (team1, team2, matchday, date, location, ref, result) VALUES (?,?,?,?,?,?,?)',
                     (game["team1"], game["team2"], matchday, game["date"], game["location"], game["id"], game["result"]))
     else:
-        for matchday in range(1, 8):
-            games = get_games(matchday)
-            for game in games:
-                db.execute("UPDATE matches SET result = ? WHERE matchday = ? AND team1 = ?",
-                           (game["result"], matchday, game["team1"]))
+        matchday = get_current_matchday()
+        games = get_games(matchday)
+        for game in games:
+            db.execute("UPDATE matches SET result = ? WHERE matchday = ? AND team1 = ?",
+                        (game["result"], matchday, game["team1"]))
     db.commit()
         
 def get_db(db_file):
@@ -116,11 +116,11 @@ def update_bet_scores(db_file, match_id):
     # Either commit after ever execution or once after multiple executions.
     db.commit()
 
-def update_results(db_file):
-    db = get_db(db_file)
-    current_game_id = db.execute("SELECT id FROM current").fetchone()[0]
-    while current_game_id < 51:
-        matchday = db.execute(f"SELECT matchday FROM matches WHERE id={current_game_id}").fetchone()[0]
+# def update_results(db_file):
+#     db = get_db(db_file)
+#     current_game_id = db.execute("SELECT id FROM current").fetchone()[0]
+#     while current_game_id < 51:
+#         matchday = db.execute(f"SELECT matchday FROM matches WHERE id={current_game_id}").fetchone()[0]
 
 
 def update_user_scores(db_file):

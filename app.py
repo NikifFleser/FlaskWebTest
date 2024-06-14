@@ -1,7 +1,7 @@
 from flask import Flask, request, session, g
 from flask import render_template, redirect, url_for, jsonify
 from flask_wtf.csrf import CSRFProtect
-from db import init_db, get_db, update_bet_in_db, country_dict, column_exists, update_bet_scores, update_user_scores
+from db import init_db, get_db, update_bet_in_db, country_dict, update_bet_scores, update_user_scores, update_matches
 from auth import auth_bp, requires_admin, requires_login
 from requests import get as get_from
 from api import get_current_matchday, get_games, DAYS
@@ -91,7 +91,7 @@ def update_bet():
 @app.route("/leaderboard")
 def leaderboard():
     # We update the leaderboard whenever someone checks the leaderboard.
-    update_results(DATABASE)
+    update_matches(DATABASE)
     update_user_scores(DATABASE)
     username = session.get("username")
     db = get_db(DATABASE)
