@@ -4,7 +4,7 @@ from flask_wtf.csrf import CSRFProtect
 from db import init_db, get_db, update_bet_in_db, country_dict, column_exists, update_bet_scores, update_user_scores
 from auth import auth_bp, requires_admin, requires_login
 from requests import get as get_from
-from api import get_current_matchday
+from api import get_current_matchday, get_games
 from datetime import datetime, timedelta
 from schedule import every, run_pending
 from threading import Thread
@@ -43,13 +43,13 @@ def bet_route():
 def bet(matchday):
     dct = country_dict
     username = session.get("username")
-    if username == "admin":
-        return redirect(url_for("auth.logout"))
     db = get_db(DATABASE)
-    match_tuples = db.execute("SELECT id, team1, team2, date FROM matches WHERE matchday = ?",(matchday,)).fetchall()
+    match_db = db.execute("SELECT id, team1, team2, date FROM matches WHERE matchday = ?",(matchday,)).fetchall()
+    match_api = get_games(matchday)
     matches = []
     current_date = datetime.now() + timedelta(days=0)
-    for match in match_tuples:
+    match_nr = 0
+    for match in match_db:
         flag_t1, flag_t2 = "xx", "xx"
         m_id = match[0]
         m_date = datetime.strptime(match[3], "%Y-%m-%dT%H:%M:%S")
@@ -63,7 +63,17 @@ def bet(matchday):
             disable = True
         else:
             disable = False
-        matches.append((m_id, flag_t1, flag_t2, bet[0], bet[1], disable, match[1], match[2]))
+
+        live = match_api[match_nr]["live"]
+        scoreline = match_api[match_nr]["result"]
+        if scoreline == None:
+            scoreline = "-:-"
+        userpoints = 0 #get_bet_points(result="2:1", bet="1:0")->3 for example 
+
+        matches.append((m_id, flag_t1, flag_t2, #0,1,2
+                         bet[0], bet[1], disable, match[1], match[2], #3,4,5,6,7
+                         live, scoreline, userpoints)) #8,9,10
+        match_nr += 1
         
     return render_template("bet.html", matches=matches, username=username, matchday=matchday)
 

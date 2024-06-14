@@ -54,16 +54,10 @@ h1 {
 }
 
 .left {
-    align-items: left;
     text-align: left;
-    float: left;
 }
 .right {
-    font-size: 16px;
-    font-style: bold;
     text-align: right;
-    padding: 0px;
-    margin: 0px;
 }
 
 .country {
@@ -71,6 +65,7 @@ h1 {
     flex-direction: column;
     align-items: center;
     text-align: center;
+    font-weight: bold;
     padding: 0px;
     margin: 0px;
     width: 100px;
@@ -84,6 +79,36 @@ h1 {
     justify-content: center;
     gap: 10px;
 }
+.match-info {
+    background-color: #fff;
+    font-weight: bold;
+    font-size: 9pt;
+    border: 3px solid #007BFF;  /* Blue border */
+    border-radius: 6px;         /* Rounded corners */
+    padding: 2px;               /* Padding */
+    width: 176px;               /* Fixed width */
+    margin: 30px auto 10px;     /* Center horizontally with specific vertical margins */
+    display: flex;              /* Make the container a flexbox */
+    box-sizing: border-box;     /* Include border in element's total width and height */
+    position: relative;         /* Position relative for pseudo-elements */
+}
+
+.part {
+    flex: 1;                    /* Each part takes up equal space */
+    text-align: center;         /* Center the text within each part */
+    position: relative;         /* Ensure pseudo-elements are positioned correctly */
+}
+.part:nth-child(1) {
+    text-align: left;
+}
+.part:nth-child(2) {
+    font-style: italic;
+}
+.part:nth-child(3) {
+    text-align: right;
+}
+
+
 .fi {
     font-size: 36px;
     font-weight: bolder;

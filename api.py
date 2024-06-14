@@ -14,6 +14,7 @@ def get_games(matchday="1", season="2024", tournament="em"):
     for raw_game in data:
         game = dict()
 
+        game["live"] = format_datetime(raw_game)
         game["date"] = raw_game["matchDateTime"]
         game["team1"] = raw_game['team1']['teamName']
         game["team2"] = raw_game['team2']['teamName']
@@ -31,6 +32,29 @@ def get_games(matchday="1", season="2024", tournament="em"):
         games.append(game)
 
     return games
+
+def format_datetime(game):
+    datetime_str = game["matchDateTime"]
+    dt = datetime.strptime(datetime_str, '%Y-%m-%dT%H:%M:%S')
+    now = datetime.now()
+    en_to_de = {"Mon": "Mo",
+                "Tue": "Di",
+                "Wed": "Mi",
+                "Thu": "Do",
+                "Fri": "Fr",
+                "Sat": "Sa",
+                "Sun": "So"}
+
+    if dt < now:
+        if game["matchIsFinished"]:
+            return "beendet"
+        return "- live -"
+    elif dt.date() == now.date():
+        return dt.strftime('%H:%M Uhr')
+    else:
+        day = dt.strftime('%a')
+        date = dt.strftime('%d.%m')
+        return f"{en_to_de[day]}. {date}"
 
 def get_current_matchday():
     current_date = datetime.now()

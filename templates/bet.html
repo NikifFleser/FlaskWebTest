@@ -18,6 +18,11 @@ Place Your Bets
 
 <form method="POST">
     {% for match in matches %}
+    <div class="match-info">
+        <div class="part">{{match[8]}}</div>
+        <div class="part">{{match[9]}}</div>
+        <div class="part">{{match[10]}} Punkte</div>
+    </div>
     <div class="match-container">
         <div class="right">
             <div class="country">
