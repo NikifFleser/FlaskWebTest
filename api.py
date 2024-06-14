@@ -3,6 +3,13 @@ from datetime import datetime, timedelta
 
 DAYS = 0
 
+def get_game(game_api_id):
+    "returns a match-dict from a game_id (ref)"
+    url = f"https://api.openligadb.de/getmatchdata/{game_api_id}"
+    response = get_from(url)
+    data = response.json()
+    return data
+
 def get_games(matchday="1", season="2024", tournament="em"):
     """returns a list of match-dicts with the following keys:
     date, team1, team2, location, matchday, result"""

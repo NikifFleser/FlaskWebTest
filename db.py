@@ -1,7 +1,7 @@
 from flask import g, has_request_context
 from datetime import datetime, timedelta
 import sqlite3
-from api import get_games, get_current_matchday, DAYS
+from api import get_games, get_game, get_current_matchday, DAYS
 from numpy import sign
 
 matchday_list = ["Gruppenphase Spieltag 1",
@@ -116,15 +116,19 @@ def update_bet_scores(db_file, match_id):
     # Either commit after ever execution or once after multiple executions.
     db.commit()
 
-# def update_results(db_file):
-#     db = get_db(db_file)
-#     current_game_id = db.execute("SELECT id FROM current").fetchone()[0]
-#     while current_game_id < 51:
-#         matchday = db.execute(f"SELECT matchday FROM matches WHERE id={current_game_id}").fetchone()[0]
-
-
 def update_user_scores(db_file):
     db = get_db(db_file)
+    # current_game_id = db.execute("SELECT id FROM current").fetchone()[0]
+    # while True:
+    #     api_game_id = db.execute("SELECT ref FROM matches WHERE id=?", (current_game_id,)).fetchone()[0]
+    #     game = get_game(api_game_id)
+    #     if game["matchIsFinished"]:
+    #         cgi = current_game_id
+    #         db.execute("UPDATE current SET id = ? WHERE id = ?", (cgi+1, cgi))
+    #         db.execute("UPDATE bets SET score = ? WHERE match_id = ?")
+    #         current_game_id += 1
+    #     else:
+    #         break
     user_scores = db.execute("SELECT user_id, SUM(bet_score) FROM bets GROUP BY user_id").fetchall()
     for user in user_scores:
         user_id = user[0]
