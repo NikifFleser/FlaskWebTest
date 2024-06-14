@@ -1,7 +1,8 @@
 from flask import g, has_request_context
 from datetime import datetime, timedelta
 import sqlite3
-from api import get_games
+from api import get_games, DAYS
+from numpy import sign
 
 matchday_list = ["Gruppenphase Spieltag 1",
                  "Gruppenphase Spieltag 2",
@@ -87,7 +88,7 @@ def get_db(db_file):
         return sqlite3.connect(db_file)
 
 def update_bet_in_db(db_file, match_id, team, goals, user_id):
-    current_date = datetime.now() + timedelta(days=0)
+    current_date = datetime.now() + timedelta(days=DAYS)
     db = get_db(db_file)
     match_date = db.execute("SELECT date FROM matches WHERE id = ?", (match_id,)).fetchone()
     if datetime.strptime(match_date[0], '%Y-%m-%dT%H:%M:%S') > current_date:
@@ -95,16 +96,6 @@ def update_bet_in_db(db_file, match_id, team, goals, user_id):
         db.commit()
         return True
     return False
-
-# We update the score of one bet via its bet_id.
-# def update_bet_score(db_file, bet_id):
-#     db = get_db(db_file)
-#     bet = db.execute("SELECT match_id, team1_goals, team2_goals FROM bets WHERE id = ?", (bet_id,)).fetchone()
-#     match_id = bet[0]
-#     match_result = db.execute("SELECT result FROM matches WHERE id = ?", (match_id,)).fetchone()[0]
-#     bet_score = evaluate_bet_score(bet[1], bet[2], match_result)
-#     db.execute("UPDATE bets SET bet_score = ? WHERE id = ?", (bet_score, bet_id))
-#     db.commit()
 
 # We update all bets for one specific match which is given by a match_id.
 def update_bet_scores(db_file, match_id):
@@ -132,9 +123,9 @@ def update_user_scores(db_file):
     
 # This could be somewhere else but not sure if it makes sense to create a py file just for one function.
 def evaluate_bet_score(team1_goal, team2_goal, match_result):
-    ON_POINT = 3
-    GOAL_DIFF = 2
-    CORRECT_TEAM = 1
+    ON_POINT = 4
+    GOAL_DIFF = 3
+    CORRECT_TEAM = 2
     WRONG = 0
 
     # We check if the user has even set a bet. If not, return 0 points.
@@ -156,11 +147,7 @@ def evaluate_bet_score(team1_goal, team2_goal, match_result):
     elif (t1_goal - t2_goal) == (r1_goal - r2_goal):
         return GOAL_DIFF
     # User betted on the correct team.
-    elif (t1_goal - t2_goal < 0) and (r1_goal - r2_goal < 0):
-        return CORRECT_TEAM
-    elif (t1_goal - t2_goal == 0) and (r1_goal - r2_goal == 0):
-        return CORRECT_TEAM
-    elif (t1_goal - t2_goal > 0) and (r1_goal - r2_goal > 0):
+    elif sign(t1_goal - t2_goal) == sign(r1_goal - r2_goal):
         return CORRECT_TEAM
     # Users did not bet on the correct team.
     else:
