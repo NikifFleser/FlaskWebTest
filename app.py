@@ -97,16 +97,6 @@ def leaderboard():
     users = db.execute("SELECT username, score FROM users ORDER BY score DESC").fetchall()
     return render_template("leaderboard.html", users=users, username=username)
 
-# Let's use url to update stuff. This is a very hacky way and it only updates for the user in the session
-# @app.route("/update_user_bet")
-# def update_user_bet():
-#     user_id = session["user_id"]
-#     db = get_db(DATABASE)
-#     bets = db.execute("SELECT id FROM bets WHERE user_id = ?", (user_id,)).fetchmany(9)
-#     for bet_id in bets:
-#         update_bet_score(DATABASE, bet_id[0])
-#     return f"Updated bets for user {user_id}"
-
 @app.route("/update_bets/<int:match_id>")
 def update_bets(match_id):
     # To test it, I am goona input dummy data
