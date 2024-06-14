@@ -59,6 +59,13 @@ def init_db(app, db_file):
             cursor.executescript(script)
         db.commit()
     update_matches(db_file)
+    update_current(db_file)
+
+def update_current(db_file):
+    db = get_db(db_file)
+    if check_table_empty(db_file, "current"):
+        db.execute('INSERT INTO current (id) VALUES (?)', (1,))
+    db.commit()
 
 def update_matches(db_file):
     db = get_db(db_file)

@@ -25,3 +25,8 @@ CREATE TABLE IF NOT EXISTS bets (
     FOREIGN KEY (user_id) REFERENCES user (id),
     FOREIGN KEY (match_id) REFERENCES match (id)
 );
+
+CREATE TABLE IF NOT EXISTS current (
+    id INTEGER PRIMARY KEY,
+    FOREIGN KEY (id) REFERENCES match(id)
+);
