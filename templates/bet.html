@@ -14,7 +14,7 @@ Place Your Bets
     <form method="GET" action="{{ url_for('bet', matchday=matchday - 1) }}">
         <button type="submit" {% if matchday <= 1 %}disabled{% endif %}><i class="fas fa-arrow-left"></i></button>
     </form>
-    <span>Matchday {{ matchday }}</span>
+    <span>{{ matchday_alias }}</span>
     <form method="GET" action="{{ url_for('bet', matchday=matchday + 1) }}">
         <button type="submit" {% if matchday >= 7 %}disabled{% endif %}><i class="fas fa-arrow-right"></i></button>
     </form>

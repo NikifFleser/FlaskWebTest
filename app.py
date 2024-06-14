@@ -1,7 +1,8 @@
 from flask import Flask, request, session, g
 from flask import render_template, redirect, url_for, jsonify
 from flask_wtf.csrf import CSRFProtect
-from db import init_db, get_db, update_bet_in_db, country_dict, update_bet_scores, update_user_scores, update_matches
+from db import country_dict, matchday_list
+from db import init_db, get_db, update_bet_in_db, update_bet_scores, update_user_scores, update_matches
 from auth import auth_bp, requires_admin, requires_login
 from requests import get as get_from
 from api import get_current_matchday, get_games, DAYS
@@ -44,6 +45,7 @@ def bet(matchday):
     match_db = db.execute("SELECT id, team1, team2, date FROM matches WHERE matchday = ?",(matchday,)).fetchall()
     match_api = get_games(matchday)
     matches = []
+    matchday_alias = matchday_list[matchday-1]
     current_date = datetime.now() + timedelta(days=DAYS)
     match_nr = 0
     for match in match_db:
@@ -69,13 +71,14 @@ def bet(matchday):
             userpoints = "-"
         else:
             userpoints = bet[2] #get_bet_points(result="2:1", bet="1:0")->3 for example 
+        
 
         matches.append((m_id, flag_t1, flag_t2, #0,1,2
                          bet[0], bet[1], disable, match[1], match[2], #3,4,5,6,7
                          live, scoreline, userpoints)) #8,9,10
         match_nr += 1
         
-    return render_template("bet.html", matches=matches, username=username, matchday=matchday)
+    return render_template("bet.html", matches=matches, username=username, matchday=matchday, matchday_alias=matchday_alias)
 
 @app.route('/update_bet', methods=['POST'])
 def update_bet():
