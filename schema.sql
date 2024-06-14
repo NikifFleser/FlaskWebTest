@@ -12,6 +12,7 @@ CREATE TABLE IF NOT EXISTS matches (
     matchday INTEGER NOT NULL,
     date DATE NOT NULL,
     location TEXT NOT NULL,
+    ref INTEGER NOT NULL,
     result TEXT
 );
 

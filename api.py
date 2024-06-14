@@ -7,6 +7,7 @@ def get_games(matchday="1", season="2024", tournament="em"):
     """returns a list of match-dicts with the following keys:
     date, team1, team2, location, matchday, result"""
 
+    #https://api.openligadb.de/getmatchdata/em/2024/1
     url = f"https://api.openligadb.de/getmatchdata/{tournament}/{season}/{matchday}"
     response = get_from(url)
     data = response.json()
@@ -23,6 +24,7 @@ def get_games(matchday="1", season="2024", tournament="em"):
         game["location"] = "none"#raw_game["location"]["locationCity"]
         game["matchday"] = matchday
         game["finished"] = raw_game["matchIsFinished"]
+        game["id"] = raw_game["matchID"]
 
         result = raw_game["matchResults"]
         try:

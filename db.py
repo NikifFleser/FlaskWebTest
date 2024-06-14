@@ -74,8 +74,8 @@ def update_matches(db_file):
             games = get_games(matchday)
             for game in games:
                 db.execute(
-                    'INSERT INTO matches (team1, team2, matchday, date, location, result) VALUES (?,?,?,?,?,?)',
-                    (game["team1"], game["team2"], matchday, game["date"], game["location"], game["result"]))
+                    'INSERT INTO matches (team1, team2, matchday, date, location, ref, result) VALUES (?,?,?,?,?,?,?)',
+                    (game["team1"], game["team2"], matchday, game["date"], game["location"], game["id"], game["result"]))
     else:
         for matchday in range(1, 8):
             games = get_games(matchday)
@@ -116,11 +116,15 @@ def update_bet_scores(db_file, match_id):
     # Either commit after ever execution or once after multiple executions.
     db.commit()
 
+def update_results(db_file):
+    db = get_db(db_file)
+    current_game_id = db.execute("SELECT id FROM current").fetchone()[0]
+    while current_game_id < 51:
+        matchday = db.execute(f"SELECT matchday FROM matches WHERE id={current_game_id}").fetchone()[0]
+
+
 def update_user_scores(db_file):
     db = get_db(db_file)
-    # user_ids = db.execute("SELECT id FROM users").fetchall()
-    # for user in user_ids:
-    #     user_id = user[0]
     user_scores = db.execute("SELECT user_id, SUM(bet_score) FROM bets GROUP BY user_id").fetchall()
     for user in user_scores:
         user_id = user[0]

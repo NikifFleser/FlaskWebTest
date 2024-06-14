@@ -91,6 +91,7 @@ def update_bet():
 @app.route("/leaderboard")
 def leaderboard():
     # We update the leaderboard whenever someone checks the leaderboard.
+    update_results(DATABASE)
     update_user_scores(DATABASE)
     username = session.get("username")
     db = get_db(DATABASE)
