@@ -72,8 +72,8 @@ def bet(matchday):
             r1 = l1["pointsTeam1"]
             r2 = l2["pointsTeam2"]
             result = f"{r1}:{r2}"
-        if result != m_result and result != "-:-":
-            update_match_result(DATABASE, m_id, result) #update the match and related bets
+        #if result != m_result and result != "-:-":
+        update_match_result(DATABASE, m_id, result) #update the match and related bets
         live = format_datetime(api)
 
         matches.append((m_id, flag_t1, flag_t2, #0,1,2
