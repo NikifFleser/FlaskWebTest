@@ -72,16 +72,26 @@ def update_matches(db_file):
     if check_table_empty(db_file, "matches"):
         for matchday in range(1, 8):
             games = get_games(matchday)
-            for game in games:
+            for g in games:
+                r = g["matchResults"]
+                if r is None or r == []:
+                    result = None
+                else:
+                    result = f"{r[1]["pointsTeam1"]}:{r[1]["pointsTeam2"]}"
                 db.execute(
-                    'INSERT INTO matches (team1, team2, matchday, date, location, ref, result) VALUES (?,?,?,?,?,?,?)',
-                    (game["team1"], game["team2"], matchday, game["date"], game["location"], game["id"], game["result"]))
+                    'INSERT INTO matches (team1, team2, matchday, date, location, ref, result) VALUES (?,?,?,?,?,?)',
+                    (g["team1"]["teamName"], g["team2"]["teamName"], matchday, g["matchDateTime"], g["matchID"], result))
     else:
         matchday = get_current_matchday()
         games = get_games(matchday)
-        for game in games:
+        for g in games:
+            r = g["matchResults"]
+            if r is None or r == []:
+                result = None
+            else:
+                result = f"{r[1]["pointsTeam1"]}:{r[1]["pointsTeam2"]}"
             db.execute("UPDATE matches SET result = ? WHERE matchday = ? AND team1 = ?",
-                        (game["result"], matchday, game["team1"]))
+                        (result, matchday, g["team1"]["teamName"]))
     db.commit()
         
 def get_db(db_file):
@@ -124,6 +134,15 @@ def update_user_scores(db_file):
         score = user[1]
         db.execute("UPDATE users SET score = ? WHERE id = ?", (score, user_id))
     db.commit()
+
+def update_match_result(db_file, match_id, result):
+    db = get_db(db_file)
+    db.execute("UPDATE matches SET result = ? WHERE id = ?", (result, match_id))
+    bets = db.execute("SELECT id, team1_goals, team2_goals FROM bets WHERE match_id = ?",(match_id,)).fetchall()
+    for bet in bets:
+        points = evaluate_bet_score(bet[1], bet[2], result)
+        db.execute("UPDATE bets SET bet_score = ? WHERE id = ?", (points, bet[0]))
+    db.commit()
     
 # This could be somewhere else but not sure if it makes sense to create a py file just for one function.
 def evaluate_bet_score(team1_goal, team2_goal, match_result):
@@ -156,4 +175,3 @@ def evaluate_bet_score(team1_goal, team2_goal, match_result):
     # Users did not bet on the correct team.
     else:
         return WRONG
-    
