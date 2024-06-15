@@ -81,6 +81,8 @@ def bet(matchday):
 
 @app.route('/update_bet', methods=['POST'])
 def update_bet():
+    """updates puts the form inputs into the database
+    called on change from js"""
     data = request.get_json()
     match_id = data.get('match_id')
     team = data.get('team')

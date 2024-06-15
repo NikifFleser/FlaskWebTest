@@ -69,14 +69,14 @@ def update_current(db_file):
 
 def update_matches(db_file):
     db = get_db(db_file)
-    if check_table_empty(db_file, "matches"):
+    if check_table_empty(db_file, "matches"): #just within init
         for matchday in range(1, 8):
             games = get_games(matchday)
             for game in games:
                 db.execute(
                     'INSERT INTO matches (team1, team2, matchday, date, location, ref, result) VALUES (?,?,?,?,?,?,?)',
                     (game["team1"], game["team2"], matchday, game["date"], game["location"], game["id"], game["result"]))
-    else:
+    else: #standard case
         matchday = get_current_matchday()
         games = get_games(matchday)
         for game in games:
