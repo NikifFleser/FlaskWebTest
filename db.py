@@ -1,7 +1,7 @@
 from flask import g, has_request_context
-from datetime import datetime, timedelta
+from datetime import datetime
 import sqlite3
-from api import get_games, get_game, get_current_matchday, DAYS
+from api import get_games, get_game, get_current_matchday, get_datetime
 from numpy import sign
 
 matchday_list = ["Gruppenphase Spieltag 1",
@@ -95,7 +95,7 @@ def get_db(db_file):
         return sqlite3.connect(db_file)
 
 def update_bet_in_db(db_file, match_id, team, goals, user_id):
-    current_date = datetime.now() + timedelta(days=DAYS)
+    current_date = get_datetime()
     db = get_db(db_file)
     match_date = db.execute("SELECT date FROM matches WHERE id = ?", (match_id,)).fetchone()
     if datetime.strptime(match_date[0], '%Y-%m-%dT%H:%M:%S') > current_date:

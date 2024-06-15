@@ -5,8 +5,8 @@ from db import country_dict, matchday_list
 from db import init_db, get_db, update_bet_in_db, update_bet_scores, update_user_scores, update_matches
 from auth import auth_bp, requires_admin, requires_login
 from requests import get as get_from
-from api import get_current_matchday, get_games, DAYS
-from datetime import datetime, timedelta
+from api import get_current_matchday, get_games, get_datetime
+from datetime import datetime
 
 app = Flask(__name__)
 app.secret_key = 'dev'
@@ -46,7 +46,7 @@ def bet(matchday):
     match_api = get_games(matchday)
     matches = []
     matchday_alias = matchday_list[matchday-1]
-    current_date = datetime.now() + timedelta(days=DAYS)
+    current_date = get_datetime()
     match_nr = 0
     for match in match_db:
         flag_t1, flag_t2 = "xx", "xx"
