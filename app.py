@@ -4,7 +4,6 @@ from flask_wtf.csrf import CSRFProtect
 from db import country_dict, matchday_list
 from db import init_db, get_db, update_bet_in_db, update_bet_scores, update_user_scores, update_matches
 from auth import auth_bp, requires_admin, requires_login
-from requests import get as get_from
 from api import get_current_matchday, get_games, DAYS
 from datetime import datetime, timedelta
 
