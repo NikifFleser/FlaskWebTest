@@ -118,17 +118,6 @@ def update_bet_scores(db_file, match_id):
 
 def update_user_scores(db_file):
     db = get_db(db_file)
-    # current_game_id = db.execute("SELECT id FROM current").fetchone()[0]
-    # while True:
-    #     api_game_id = db.execute("SELECT ref FROM matches WHERE id=?", (current_game_id,)).fetchone()[0]
-    #     game = get_game(api_game_id)
-    #     if game["matchIsFinished"]:
-    #         cgi = current_game_id
-    #         db.execute("UPDATE current SET id = ? WHERE id = ?", (cgi+1, cgi))
-    #         db.execute("UPDATE bets SET score = ? WHERE match_id = ?")
-    #         current_game_id += 1
-    #     else:
-    #         break
     user_scores = db.execute("SELECT user_id, SUM(bet_score) FROM bets GROUP BY user_id").fetchall()
     for user in user_scores:
         user_id = user[0]

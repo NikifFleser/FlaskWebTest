@@ -100,17 +100,6 @@ def leaderboard():
     users = db.execute("SELECT username, score FROM users ORDER BY score DESC").fetchall()
     return render_template("leaderboard.html", users=users, username=username)
 
-@app.route("/update_bets/<int:match_id>")
-def update_bets(match_id):
-    # To test it, I am goona input dummy data
-    dummy_result = "1:0"
-    db = get_db(DATABASE)
-    db.execute("UPDATE matches SET result = ? WHERE id = ?", (dummy_result, match_id))
-    db.commit()
-    update_bet_scores(DATABASE, match_id)
-    return f"Updated bets for match {match_id}."
-
-
 # Close the database connection at ?request? end
 @app.teardown_appcontext
 def close_db_connection(exception):
