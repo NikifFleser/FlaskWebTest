@@ -77,10 +77,12 @@ def update_matches(db_file):
                 if r is None or r == []:
                     result = None
                 else:
-                    result = f"{r[1]["pointsTeam1"]}:{r[1]["pointsTeam2"]}"
+                    p1 = r[1]["pointsTeam1"]
+                    p2 = r[1]["pointsTeam2"]
+                    result = f"{p1}:{p2}"
                 db.execute(
-                    'INSERT INTO matches (team1, team2, matchday, date, location, ref, result) VALUES (?,?,?,?,?,?)',
-                    (g["team1"]["teamName"], g["team2"]["teamName"], matchday, g["matchDateTime"], g["matchID"], result))
+                    'INSERT INTO matches (team1, team2, matchday, date, location, ref, result) VALUES (?,?,?,?,?,?,?)',
+                    (g["team1"]["teamName"], g["team2"]["teamName"], matchday, g["matchDateTime"], "Germany", g["matchID"], result))
     else:
         matchday = get_current_matchday()
         games = get_games(matchday)
@@ -89,7 +91,9 @@ def update_matches(db_file):
             if r is None or r == []:
                 result = None
             else:
-                result = f"{r[1]["pointsTeam1"]}:{r[1]["pointsTeam2"]}"
+                    p1 = r[1]["pointsTeam1"]
+                    p2 = r[1]["pointsTeam2"]
+                    result = f"{p1}:{p2}"
             db.execute("UPDATE matches SET result = ? WHERE matchday = ? AND team1 = ?",
                         (result, matchday, g["team1"]["teamName"]))
     db.commit()

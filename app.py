@@ -68,7 +68,11 @@ def bet(matchday):
         if api["matchResults"] is None or api["matchResults"] == []:
             result = "-:-"
         else:
-            result = f"{api["matchResults"][1]["pointsTeam1"]}:{api["matchResults"][1]["pointsTeam2"]}"
+            l1 = api["matchResults"][1]
+            l2 = api["matchResults"][1]
+            r1 = l1["pointsTeam1"]
+            r2 = l2["pointsTeam2"]
+            result = f"{r1}:{r2}"
         if result != m_result and result != "-:-":
             update_match_result(DATABASE, m_id, result) #update the match and related bets
         live = format_datetime(api)
