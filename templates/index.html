@@ -7,5 +7,12 @@ Tippspiel
 
 
 {% block content %}
-<h1>{% if username %}Welcome, {{ username }}!{% else %}Begone, Guest!{% endif %}</h1>
+<h1>{% if username %}Hallo, {{ username }}!{% endif %}</h1>
+
+<h3>Die Punkteregelung:</h3>
+
+<div>Exakter Tipp: 4 Punkte</div>
+<div>Richtiges Torverhältnis: 3 Punkte</div>
+<div>Korrekte Tendenz: 2 Punkte</div>
+<div>Totale Niete: 0 Punkte</div>
 {% endblock %}
