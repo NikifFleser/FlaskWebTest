@@ -89,5 +89,3 @@ def get_current_matchday():
                 return matchday
     # If all matches have passed, return the last matchday
     return 7
-
-get_datetime()

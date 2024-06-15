@@ -64,7 +64,6 @@ def bet(matchday):
             disable = True
 
         api = get_game(m_ref)
-        finished = api["matchIsFinished"]
         if api["matchResults"] is None or api["matchResults"] == []:
             result = "-:-"
         else:
