@@ -1,7 +1,18 @@
 from requests import get as get_from
 from datetime import datetime, timedelta
+from pytz import timezone
 
-DAYS = 0
+
+def get_datetime():
+    DAYS = 0
+    HOURS = 0
+
+    berlin_timezone = timezone('Europe/Berlin')
+    berlin_aware = datetime.now(berlin_timezone) + timedelta(days=DAYS, hours=HOURS)
+    berlin_naive = berlin_aware.replace(tzinfo=None)
+
+    return berlin_naive
+
 
 def get_game(game_api_id):
     "returns a match-dict from a game_id (ref)"
@@ -47,7 +58,7 @@ def get_games(matchday="1", season="2024", tournament="em"):
 def format_datetime(game):
     datetime_str = game["matchDateTime"]
     dt = datetime.strptime(datetime_str, '%Y-%m-%dT%H:%M:%S')
-    now = datetime.now() + timedelta(days=DAYS)
+    now = get_datetime()
     en_to_de = {"Mon": "Mo",
                 "Tue": "Di",
                 "Wed": "Mi",
@@ -77,3 +88,5 @@ def get_current_matchday():
                 return matchday
     # If all matches have passed, return the last matchday
     return 7
+
+get_datetime()
