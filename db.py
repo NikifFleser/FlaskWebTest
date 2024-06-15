@@ -158,6 +158,9 @@ def evaluate_bet_score(team1_goal, team2_goal, match_result):
     # We check if the user has even set a bet. If not, return 0 points.
     if (team1_goal == None) or (team2_goal == None):
         return WRONG
+    
+    if match_result == "-:-":
+        return WRONG
 
     # We split a result like 3:1 into a list ["3", "1"].
     m_result = match_result.split(":")
