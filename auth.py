@@ -39,7 +39,7 @@ def login():
 
 @auth_bp.route('/signup', methods=['GET', 'POST'])
 def signup():
-    return redirect(url_for("index"))
+    # return redirect(url_for("index"))
     if request.method == 'GET':
         return render_template("signup.html", error=None)
     
