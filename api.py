@@ -33,25 +33,26 @@ def get_games(matchday="1", season="2024", tournament="em"):
     games = []
 
     for raw_game in data:
-        game = dict()
+        games.append(raw_game)
+        # game = dict()
 
-        game["live"] = format_datetime(raw_game)
-        game["date"] = raw_game["matchDateTime"]
-        game["team1"] = raw_game['team1']['teamName']
-        game["team2"] = raw_game['team2']['teamName']
-        game["location"] = "none"#raw_game["location"]["locationCity"]
-        game["matchday"] = matchday
-        game["finished"] = raw_game["matchIsFinished"]
-        game["id"] = raw_game["matchID"]
+        # game["live"] = format_datetime(raw_game)
+        # game["date"] = raw_game["matchDateTime"]
+        # game["team1"] = raw_game['team1']['teamName']
+        # game["team2"] = raw_game['team2']['teamName']
+        # game["location"] = "none"#raw_game["location"]["locationCity"]
+        # game["matchday"] = matchday
+        # game["finished"] = raw_game["matchIsFinished"]
+        # game["id"] = raw_game["matchID"]
 
-        result = raw_game["matchResults"]
-        try:
-            g1 = result[1]['pointsTeam1']
-            g2 = result[1]['pointsTeam2']
-            game["result"] = f"{g1}:{g2}"
-        except(IndexError):
-            game["result"] = None
-        games.append(game)
+        # result = raw_game["matchResults"]
+        # try:
+        #     g1 = result[1]['pointsTeam1']
+        #     g2 = result[1]['pointsTeam2']
+        #     game["result"] = f"{g1}:{g2}"
+        # except(IndexError):
+        #     game["result"] = None
+        # games.append(game)
 
     return games
 
@@ -83,7 +84,7 @@ def get_current_matchday():
     for matchday in range(1, 8):
         matches = get_games(matchday)
         for match in matches:
-            match_date = datetime.strptime(match['date'], '%Y-%m-%dT%H:%M:%S')
+            match_date = datetime.strptime(match['matchDateTime'], '%Y-%m-%dT%H:%M:%S')
             if match_date >= current_date:
                 return matchday
     # If all matches have passed, return the last matchday

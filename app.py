@@ -1,10 +1,10 @@
 from flask import Flask, request, session, g
 from flask import render_template, redirect, url_for, jsonify
 from flask_wtf.csrf import CSRFProtect
-from db import country_dict, matchday_list
-from db import init_db, get_db, update_bet_in_db, update_bet_scores, update_user_scores, update_matches
+from db import country_dict, matchday_list, update_match_result
+from db import init_db, get_db, update_bet_in_db
 from auth import auth_bp, requires_admin, requires_login
-from api import get_current_matchday, get_games, get_datetime
+from api import get_current_matchday, get_game, get_datetime, format_datetime
 from datetime import datetime
 
 app = Flask(__name__)
@@ -38,44 +38,44 @@ def bet_route():
 @app.route("/bet/<int:matchday>")
 @requires_login
 def bet(matchday):
+    current_date = get_datetime()
     dct = country_dict
     username = session.get("username")
-    db = get_db(DATABASE)
-    match_db = db.execute("SELECT id, team1, team2, date FROM matches WHERE matchday = ?",(matchday,)).fetchall()
-    match_api = get_games(matchday)
-    matches = []
     matchday_alias = matchday_list[matchday-1]
-    current_date = get_datetime()
-    match_nr = 0
-    for match in match_db:
-        flag_t1, flag_t2 = "xx", "xx"
-        m_id = match[0]
-        m_date = datetime.strptime(match[3], "%Y-%m-%dT%H:%M:%S")
+    db = get_db(DATABASE)
+    matches_db = db.execute("SELECT id, team1, team2, date, result, ref FROM matches WHERE matchday = ?",(matchday,)).fetchall()
+    matches = []
+    
+    for m in matches_db:
+        
+        m_id, m_t1, m_t2, m_date, m_result, m_ref = m[0], m[1], m[2], m[3], m[4], m[5]
+        m_date = datetime.strptime(m_date, "%Y-%m-%dT%H:%M:%S")
         bet = db.execute("SELECT team1_goals, team2_goals, bet_score FROM bets WHERE user_id = ? and match_id = ?", (session["user_id"], m_id)).fetchone()
-        if match[1] in dct:
-            flag_t1 = dct[match[1]]
-        if match[2] in dct:
-            flag_t2 = dct[match[2]]
-            
+        b_g1, b_g2, b_score = bet[0], bet[1], bet[2]
+        #assign flag tags
+        flag_t1, flag_t2 = "xx", "xx"
+        if m_t1 in dct:
+            flag_t1 = dct[m_t1]
+        if m_t2 in dct:
+            flag_t2 = dct[m_t2]
+        #disable if game started
+        disable = False 
         if m_date < current_date:
             disable = True
-        else:
-            disable = False
 
-        live = match_api[match_nr]["live"]
-        scoreline = match_api[match_nr]["result"]
-        if scoreline == None:
-            scoreline = "-:-"
-        if live != "Endstand" and live != "- Live -":
-            userpoints = "-"
+        api = get_game(m_ref)
+        finished = api["matchIsFinished"]
+        if api["matchResults"] is None or api["matchResults"] == []:
+            result = "-:-"
         else:
-            userpoints = bet[2] #get_bet_points(result="2:1", bet="1:0")->3 for example 
-        
+            result = f"{api["matchResults"][1]["pointsTeam1"]}:{api["matchResults"][1]["pointsTeam2"]}"
+        if result != m_result and result != "-:-":
+            update_match_result(DATABASE, m_id, result) #update the match and related bets
+        live = format_datetime(api)
 
         matches.append((m_id, flag_t1, flag_t2, #0,1,2
-                         bet[0], bet[1], disable, match[1], match[2], #3,4,5,6,7
-                         live, scoreline, userpoints)) #8,9,10
-        match_nr += 1
+                         b_g1, b_g2, disable, m_t1, m_t2, #3,4,5,6,7
+                         live, result, b_score)) #8,9,10
         
     return render_template("bet.html", matches=matches, username=username, matchday=matchday, matchday_alias=matchday_alias)
 
@@ -94,24 +94,10 @@ def update_bet():
 
 @app.route("/leaderboard")
 def leaderboard():
-    # We update the leaderboard whenever someone checks the leaderboard.
-    update_matches(DATABASE)
-    update_user_scores(DATABASE)
     username = session.get("username")
     db = get_db(DATABASE)
     users = db.execute("SELECT username, score FROM users ORDER BY score DESC").fetchall()
     return render_template("leaderboard.html", users=users, username=username)
-
-@app.route("/update_bets/<int:match_id>")
-def update_bets(match_id):
-    # To test it, I am goona input dummy data
-    dummy_result = "1:0"
-    db = get_db(DATABASE)
-    db.execute("UPDATE matches SET result = ? WHERE id = ?", (dummy_result, match_id))
-    db.commit()
-    update_bet_scores(DATABASE, match_id)
-    return f"Updated bets for match {match_id}."
-
 
 # Close the database connection at ?request? end
 @app.teardown_appcontext
