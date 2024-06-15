@@ -58,7 +58,7 @@ def get_games(matchday="1", season="2024", tournament="em"):
 def format_datetime(game):
     datetime_str = game["matchDateTime"]
     dt = datetime.strptime(datetime_str, '%Y-%m-%dT%H:%M:%S')
-    now = datetime.now() + timedelta(days=DAYS)
+    now = get_datetime()
     en_to_de = {"Mon": "Mo",
                 "Tue": "Di",
                 "Wed": "Mi",
