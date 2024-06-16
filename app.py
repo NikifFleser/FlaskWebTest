@@ -2,7 +2,7 @@ from flask import Flask, request, session, g
 from flask import render_template, redirect, url_for, jsonify
 from flask_wtf.csrf import CSRFProtect
 from db import country_dict, matchday_list, update_match_result
-from db import init_db, get_db, update_bet_in_db
+from db import init_db, get_db, update_bet_in_db, update_user_scores
 from auth import auth_bp, requires_admin, requires_login
 from api import get_current_matchday, get_game, get_datetime, format_datetime
 from datetime import datetime
@@ -98,6 +98,7 @@ def update_bet():
 @app.route("/leaderboard")
 def leaderboard():
     username = session.get("username")
+    update_user_scores(DATABASE)
     db = get_db(DATABASE)
     users = db.execute("SELECT username, score FROM users ORDER BY score DESC").fetchall()
     return render_template("leaderboard.html", users=users, username=username)
