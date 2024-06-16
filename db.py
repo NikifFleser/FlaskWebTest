@@ -165,20 +165,24 @@ def evaluate_bet_score(team1_goal, team2_goal, match_result):
     # We split a result like 3:1 into a list ["3", "1"].
     m_result = match_result.split(":")
 
-    t1_goal = int(team1_goal)
-    t2_goal = int(team2_goal)
-    r1_goal = int(m_result[0])
-    r2_goal = int(m_result[1])
-    
-    # User betted on the correct team and the exact goal number.
-    if (t1_goal == r1_goal) and (t2_goal == r2_goal):
-        return ON_POINT
-    # User betted on the correct team and the correct goal difference.
-    elif (t1_goal - t2_goal) == (r1_goal - r2_goal):
-        return GOAL_DIFF
-    # User betted on the correct team.
-    elif sign(t1_goal - t2_goal) == sign(r1_goal - r2_goal):
-        return CORRECT_TEAM
-    # Users did not bet on the correct team.
-    else:
+    try:
+        t1_goal = int(team1_goal)
+        t2_goal = int(team2_goal)
+        r1_goal = int(m_result[0])
+        r2_goal = int(m_result[1])
+        
+        # User betted on the correct team and the exact goal number.
+        if (t1_goal == r1_goal) and (t2_goal == r2_goal):
+            return ON_POINT
+        # User betted on the correct team and the correct goal difference.
+        elif (t1_goal - t2_goal) == (r1_goal - r2_goal):
+            return GOAL_DIFF
+        # User betted on the correct team.
+        elif sign(t1_goal - t2_goal) == sign(r1_goal - r2_goal):
+            return CORRECT_TEAM
+        # Users did not bet on the correct team.
+        else:
+            return WRONG
+    except:
+        print("Only integers are allowed.")
         return WRONG
