@@ -24,37 +24,31 @@ def get_game(game_api_id):
 def get_games(matchday="1", season="2024", tournament="em"):
     """returns a list of match-dicts with the following keys:
     date, team1, team2, location, matchday, result"""
-
     #https://api.openligadb.de/getmatchdata/em/2024/1
     url = f"https://api.openligadb.de/getmatchdata/{tournament}/{season}/{matchday}"
     response = get_from(url)
     data = response.json()
-
     games = []
-
     for raw_game in data:
         games.append(raw_game)
-        # game = dict()
-
-        # game["live"] = format_datetime(raw_game)
-        # game["date"] = raw_game["matchDateTime"]
-        # game["team1"] = raw_game['team1']['teamName']
-        # game["team2"] = raw_game['team2']['teamName']
-        # game["location"] = "none"#raw_game["location"]["locationCity"]
-        # game["matchday"] = matchday
-        # game["finished"] = raw_game["matchIsFinished"]
-        # game["id"] = raw_game["matchID"]
-
-        # result = raw_game["matchResults"]
-        # try:
-        #     g1 = result[1]['pointsTeam1']
-        #     g2 = result[1]['pointsTeam2']
-        #     game["result"] = f"{g1}:{g2}"
-        # except(IndexError):
-        #     game["result"] = None
-        # games.append(game)
-
     return games
+
+def game_get_result(game):
+    """returns None or 'x:y'"""
+    res = game["matchResults"]
+    if res == [] or res is None:
+        return None
+    g1 = res[1]["pointsTeam1"]
+    g2 = res[1]["pointsTeam2"]
+    return f"{g1}:{g2}"
+
+def game_get_date(game):
+    date = game["matchDateTime"]
+    return datetime.strptime(date, "%Y-%m-%dT%H:%M:%S")
+
+def game_get_id(game):
+    id = game["matchID"]
+    return id - 69340
 
 def format_datetime(game):
     datetime_str = game["matchDateTime"]

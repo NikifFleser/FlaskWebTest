@@ -4,7 +4,7 @@ from flask_wtf.csrf import CSRFProtect
 from db import country_dict, matchday_list, update_match_result
 from db import init_db, get_db, update_bet_in_db, update_user_scores
 from auth import auth_bp, requires_admin, requires_login
-from api import get_current_matchday, get_game, get_datetime, format_datetime
+from api import get_current_matchday, get_game, get_games, game_get_result, game_get_id, game_get_date, get_datetime, format_datetime
 from datetime import datetime
 
 app = Flask(__name__)
@@ -39,46 +39,40 @@ def bet_route():
 @requires_login
 def bet(matchday):
     current_date = get_datetime()
-    dct = country_dict
     username = session.get("username")
     matchday_alias = matchday_list[matchday-1]
     db = get_db(DATABASE)
-    matches_db = db.execute("SELECT id, team1, team2, date, result, ref FROM matches WHERE matchday = ?",(matchday,)).fetchall()
+    matches_api = get_games(matchday)
     matches = []
-    
-    for m in matches_db:
-        
-        m_id, m_t1, m_t2, m_date, m_result, m_ref = m[0], m[1], m[2], m[3], m[4], m[5]
-        m_date = datetime.strptime(m_date, "%Y-%m-%dT%H:%M:%S")
-        bet = db.execute("SELECT team1_goals, team2_goals, bet_score FROM bets WHERE user_id = ? and match_id = ?", (session["user_id"], m_id)).fetchone()
-        b_g1, b_g2, b_score = bet[0], bet[1], bet[2]
+    for m in matches_api:
+        m_t1, m_t2 = m["team1"]["teamName"], m["team2"]["teamName"]
+        m_id, m_date, m_result = game_get_id(m), game_get_date(m), game_get_result(m)
+        if m_result == None: m_result = "-:-"
+        #bet = db.execute("SELECT team1_goals, team2_goals, bet_score FROM bets WHERE user_id = ? and match_id = ?", (session["user_id"], m_id)).fetchone()
+        bet = db.execute("""SELECT b.team1_goals, b.team2_goals, b.bet_score, m.result
+                          FROM bets b JOIN matches m ON b.match_id = m.id 
+                          WHERE b.user_id = ? AND b.match_id = ?""",
+                          (session["user_id"], m_id)).fetchone()
+        b_g1, b_g2, b_score, old_result = bet[0], bet[1], bet[2], bet[3]
         #assign flag tags
         flag_t1, flag_t2 = "xx", "xx"
-        if m_t1 in dct:
-            flag_t1 = dct[m_t1]
-        if m_t2 in dct:
-            flag_t2 = dct[m_t2]
+        if m_t1 in country_dict:
+            flag_t1 = country_dict[m_t1]
+        if m_t2 in country_dict:
+            flag_t2 = country_dict[m_t2]
         #disable if game started
         disable = False 
         if m_date < current_date:
             disable = True
 
-        api = get_game(m_ref)
-        if api["matchResults"] is None or api["matchResults"] == []:
-            result = "-:-"
-        else:
-            l1 = api["matchResults"][1]
-            l2 = api["matchResults"][1]
-            r1 = l1["pointsTeam1"]
-            r2 = l2["pointsTeam2"]
-            result = f"{r1}:{r2}"
-        #if result != m_result and result != "-:-":
-        update_match_result(DATABASE, m_id, result) #update the match and related bets
-        live = format_datetime(api)
+        live = format_datetime(m)
+        if old_result != m_result and m_result != "-:-":
+            update_match_result(DATABASE, m_id, m_result) #update the match and related bets
+        
 
         matches.append((m_id, flag_t1, flag_t2, #0,1,2
                          b_g1, b_g2, disable, m_t1, m_t2, #3,4,5,6,7
-                         live, result, b_score)) #8,9,10
+                         live, m_result, b_score)) #8,9,10
         
     return render_template("bet.html", matches=matches, username=username, matchday=matchday, matchday_alias=matchday_alias)
 
