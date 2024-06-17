@@ -2,7 +2,6 @@ from flask import Blueprint, session, request, current_app
 from flask import redirect, url_for, render_template, flash
 from db import get_db
 from functools import wraps
-import random
 
 auth_bp = Blueprint('auth', __name__)
 
@@ -40,7 +39,7 @@ def login():
 @auth_bp.route('/signup', methods=['GET', 'POST'])
 def signup():
     # Removing users
-    db = get_db("DATABASE")
+    db = get_db("data.db")
     for id in [8, 9, 10]:
         db.execute("DELETE FROM bets WHERE user_id = ?", (id,))
         db.execute("DELETE FROM users WHERE id = ?", (id,))
