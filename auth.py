@@ -39,11 +39,11 @@ def login():
 @auth_bp.route('/signup', methods=['GET', 'POST'])
 def signup():
     # Removing users
-    db = get_db("data.db")
-    for id in [8, 9, 10]:
-        db.execute("DELETE FROM bets WHERE user_id = ?", (id,))
-        db.execute("DELETE FROM users WHERE id = ?", (id,))
-    db.commit()
+    # db = get_db("data.db")
+    # for id in [8, 9, 10]:
+    #     db.execute("DELETE FROM bets WHERE user_id = ?", (id,))
+    #     db.execute("DELETE FROM users WHERE id = ?", (id,))
+    # db.commit()
 
     return redirect(url_for("index"))
 
