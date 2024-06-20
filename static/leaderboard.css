@@ -1,0 +1,91 @@
+/* Leaderboard styling */
+:root {
+    --rank-width: 34px;
+    --player-width: 144px;
+    --points-width: 54px;
+    --my-padding: 3px;
+}
+
+div.content {
+    min-width: 350px;
+    margin-left: auto;
+    margin-right: auto;
+    overflow: auto;
+}
+
+/* Everything related to table*/
+table {
+    margin-left: auto;
+    margin-right: auto;
+    border-collapse: collapse;
+}
+
+th.rank {
+    vertical-align: bottom;
+    text-align: left;
+    min-width: var(--rank-width);
+    max-width: var(--rank-width);
+    padding: var(--my-padding);
+}
+
+th.player {
+    vertical-align: bottom;
+    text-align: left;
+    min-width: var(--player-width);
+    max-width: var(--player-width);
+    padding: var(--my-padding);
+}
+
+th.points {
+    vertical-align: bottom;
+    text-align: left;
+    min-width: var(--points-width);
+    max-width: var(--points-width);
+    padding: var(--my-padding);
+}
+
+th.result {
+    min-width: 100px;
+    padding: 3px;
+}
+
+tr>th:first-child, tr>td:first-child {
+    position: sticky;
+    left: 0px;
+}
+
+tr>th:nth-child(2), tr>td:nth-child(2) {
+    position: sticky;
+    left: calc(var(--rank-width) + 2 * var(--my-padding));
+}
+
+tr>th:nth-child(3), tr>td:nth-child(3) {
+    position: sticky;
+    left: calc(var(--rank-width) + var(--player-width) + 4 * var(--my-padding));
+}
+
+/* Everything related to sidenav */
+.sidenav {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 20px;
+}
+.sidenav form {
+    margin: 0 10px;
+}
+.sidenav span {
+    font-size: 20px;
+    font-weight: bold;
+    margin: 0 10px;
+}
+.sidenav button {
+    background: none;
+    border: none;
+    font-size: 20px;
+    cursor: pointer;
+}
+.sidenav button:disabled {
+    cursor: not-allowed;
+    color: grey;
+}

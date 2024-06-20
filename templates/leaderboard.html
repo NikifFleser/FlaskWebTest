@@ -3,6 +3,7 @@
 
 {% block styles %}
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/lipis/flag-icons@7.2.3/css/flag-icons.min.css">
+<link rel="stylesheet" href="{{ url_for('static', filename='leaderboard.css') }}">
 {% endblock %}
 {% block title %}
 Tipp-Tabelle
@@ -10,22 +11,94 @@ Tipp-Tabelle
 
 {% block content %}
 <body>
-    <h1>Leaderboard</h1>
-    <table>
-        <colgroup>
-            <col span="1" class="user">
-            <col span="1" class="score">
-        </colgroup>
-        <tr>
-            <th>Spieler</th>
-            <th>Punkte</th>
-        </tr>
-        {% for user in users %}
-            <tr>
-                <td>{{ user[0] }}</td>
-                <td>{{ user[1] }}</td>
-            </tr>
-        {% endfor %}
-    </table>
+    <div class="sidenav">
+        <form method="GET" action="{{ url_for('leaderboard', matchday=matchday - 1) }}">
+            <button type="submit" {% if matchday <= 1 %}disabled{% endif %}><i class="fas fa-arrow-left"></i></button>
+        </form>
+        <span>{{ matchday_alias }}</span>
+        <form method="GET" action="{{ url_for('leaderboard', matchday=matchday + 1) }}">
+            <button type="submit" {% if matchday >= 7 %}disabled{% endif %}><i class="fas fa-arrow-right"></i></button>
+        </form>
+    </div>
+    <div class="content">
+        <table id="lead-table">
+            <thead>
+                <tr>
+                    <th class="rank">Pos</th>
+                    <th class="player">Spieler</th>
+                    <th class="points">Punkte</th>
+                    <th class="result">
+                        <div>KOR : POL</div>
+                        <div>2:2</div>
+                    </th>
+                    <th class="result">
+                        <div>KOR : POL</div>
+                        <div>2:2</div>
+                    </th>
+                    <th class="result">
+                        <div>KOR : POL</div>
+                        <div>2:2</div>
+                    </th>
+                    <th class="result">
+                        <div>KOR : POL</div>
+                        <div>2:2</div>
+                    </th>
+                    <th class="result">
+                        <div>KOR : POL</div>
+                        <div>2:2</div>
+                    </th>
+                    <th class="result">
+                        <div>KOR : POL</div>
+                        <div>2:2</div>
+                    </th>
+                    <th class="result">
+                        <div>KOR : POL</div>
+                        <div>2:2</div>
+                    </th>
+                    <th class="result">
+                        <div>KOR : POL</div>
+                        <div>2:2</div>
+                    </th>
+                    <th class="result">
+                        <div>KOR : POL</div>
+                        <div>2:2</div>
+                    </th>
+                    <th class="result">
+                        <div>KOR : POL</div>
+                        <div>2:2</div>
+                    </th>
+                    <th class="result">
+                        <div>KOR : POL</div>
+                        <div>2:2</div>
+                    </th>
+                    <th class="result">
+                        <div>KOR : POL</div>
+                        <div>2:2</div>
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for user in users %}
+                <tr>
+                    <td class="rank">1.</td>
+                    <td class="player">{{ user[0] }}</td>
+                    <td class="points">{{ user[1] }}</td>
+                    <td>5</td>
+                    <td>5</td>
+                    <td>5</td>
+                    <td>5</td>
+                    <td>5</td>
+                    <td>5</td>
+                    <td>5</td>
+                    <td>5</td>
+                    <td>5</td>
+                    <td>5</td>
+                    <td>5</td>
+                    <td>5</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
 </body>
 {% endblock %}

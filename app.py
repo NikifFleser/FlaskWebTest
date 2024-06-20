@@ -89,13 +89,19 @@ def update_bet():
         return jsonify({'status': 'success', 'match_id': match_id, 'team': team, 'goals': goals})
     return jsonify({'status': 'failure'})
 
-@app.route("/leaderboard")
-def leaderboard():
+@app.route("/leaderboard_route")
+def leaderboard_route():
+    matchday = get_current_matchday()
+    return redirect(url_for('leaderboard', matchday=matchday))
+
+@app.route("/leaderboard/<int:matchday>")
+def leaderboard(matchday):
     username = session.get("username")
+    matchday_alias = matchday_list[matchday-1]
     update_user_scores(DATABASE)
     db = get_db(DATABASE)
     users = db.execute("SELECT username, score FROM users ORDER BY score DESC").fetchall()
-    return render_template("leaderboard.html", users=users, username=username)
+    return render_template("leaderboard.html", users=users, username=username, matchday=matchday, matchday_alias=matchday_alias)
 
 # Close the database connection at ?request? end
 @app.teardown_appcontext
