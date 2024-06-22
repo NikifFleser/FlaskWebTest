@@ -46,9 +46,12 @@ def game_get_date(game):
     date = game["matchDateTime"]
     return datetime.strptime(date, "%Y-%m-%dT%H:%M:%S")
 
-def game_get_id(game):
+def game_get_db_id(game):
     id = game["matchID"]
     return id - 69340
+
+def game_get_online_id(game_id):
+    return game_id + 69340
 
 def format_datetime(game):
     datetime_str = game["matchDateTime"]

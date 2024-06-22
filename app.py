@@ -4,7 +4,7 @@ from flask_wtf.csrf import CSRFProtect
 from db import country_dict, matchday_list, update_match_result
 from db import init_db, get_db, update_bet_in_db, update_user_scores
 from auth import auth_bp, requires_admin, requires_login
-from api import get_current_matchday, get_game, get_games, game_get_result, game_get_id, game_get_date, get_datetime, format_datetime
+from api import game_get_online_id, get_current_matchday, get_game, get_games, game_get_result, game_get_db_id, game_get_date, get_datetime, format_datetime
 from datetime import datetime
 
 app = Flask(__name__)
@@ -46,7 +46,7 @@ def bet(matchday):
     matches = []
     for m in matches_api:
         m_t1, m_t2 = m["team1"]["teamName"], m["team2"]["teamName"]
-        m_id, m_date, m_result = game_get_id(m), game_get_date(m), game_get_result(m)
+        m_id, m_date, m_result = game_get_db_id(m), game_get_date(m), game_get_result(m)
         if m_result == None: m_result = "-:-"
         #bet = db.execute("SELECT team1_goals, team2_goals, bet_score FROM bets WHERE user_id = ? and match_id = ?", (session["user_id"], m_id)).fetchone()
         bet = db.execute("""SELECT b.team1_goals, b.team2_goals, b.bet_score, m.result
@@ -112,7 +112,7 @@ def leaderboard(matchday):
         user_score = user[2]
         
         # If there is a more elegant way, I would love to hear about it!
-        bets = db.execute("""SELECT b.team1_goals, b.team2_goals, b.bet_score FROM bets b 
+        bets = db.execute("""SELECT b.team1_goals, b.team2_goals, b.bet_score, b.match_id, b.user_id FROM bets b 
                           JOIN matches as m ON b.match_id = m.id AND m.matchday = ? 
                           WHERE b.user_id = ? ORDER BY b.match_id ASC""", (matchday, user_id)).fetchall()
         user_bets = []  # Data is stored as (bet, score)
@@ -120,8 +120,17 @@ def leaderboard(matchday):
             t1_goals = bet[0]
             t2_goals = bet[1]
             bet_score = bet[2]
+            match_id = bet[3]
+            b_user_id = bet[4]
+            match_started = game_get_result(get_game(game_get_online_id(match_id))) == None
+
             if t1_goals == None or t2_goals == None:
                 user_bet = "-:-"
+            elif not match_started:
+                if b_user_id == user_id:
+                    user_bet = f"{t1_goals}:{t2_goals}"
+                else:
+                    user_bet = "-:-"
             else:
                 user_bet = f"{t1_goals}:{t2_goals}"
             data = (user_bet, bet_score)
