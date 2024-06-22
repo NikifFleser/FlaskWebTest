@@ -1,0 +1,83 @@
+/* Leaderboard styling */
+div.content {
+    min-width: 350px;
+    margin-left: auto;
+    margin-right: auto;
+    overflow: auto;
+}
+
+/* Everything related to table*/
+table {
+    margin-left: auto;
+    margin-right: auto;
+    border-collapse: collapse;
+}
+
+th, td {
+    background-color: #f0f0f0;
+    padding: 3px;
+}
+
+th.rank {
+    vertical-align: bottom;
+    text-align: left;
+    min-width: 30px;
+}
+
+td.rank {
+    vertical-align: top;
+    text-align: right;
+    min-width: 30px;
+}
+
+th.player {
+    vertical-align: bottom;
+    text-align: left;
+    min-width: 170px;
+}
+
+td.player {
+    text-align: left;
+    min-width: 170px;
+}
+
+th.points {
+    vertical-align: bottom;
+    text-align: left;
+    min-width: 50px;
+}
+
+th.result {
+    min-width: 100px;
+}
+
+.sticky {
+    position: sticky;
+    z-index: 1;
+}
+
+/* Everything related to sidenav */
+.sidenav {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 20px;
+}
+.sidenav form {
+    margin: 0 10px;
+}
+.sidenav span {
+    font-size: 20px;
+    font-weight: bold;
+    margin: 0 10px;
+}
+.sidenav button {
+    background: none;
+    border: none;
+    font-size: 20px;
+    cursor: pointer;
+}
+.sidenav button:disabled {
+    cursor: not-allowed;
+    color: grey;
+}
