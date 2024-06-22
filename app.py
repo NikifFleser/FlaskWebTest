@@ -100,8 +100,47 @@ def leaderboard(matchday):
     matchday_alias = matchday_list[matchday-1]
     update_user_scores(DATABASE)
     db = get_db(DATABASE)
-    users = db.execute("SELECT username, score FROM users ORDER BY score DESC").fetchall()
-    return render_template("leaderboard.html", users=users, username=username, matchday=matchday, matchday_alias=matchday_alias)
+    users = db.execute("SELECT id, username, score FROM users ORDER BY score DESC").fetchall()
+    matches = db.execute("SELECT id, team1, team2, result FROM matches WHERE matchday = ? ORDER BY id ASC", (matchday,)).fetchall()
+
+    # This is going to be a bit messy...
+    bet_data = []
+    rank = 1
+    for user in users:
+        user_id = user[0]
+        user_name = user[1]
+        user_score = user[2]
+        
+        # If there is a more elegant way, I would love to hear about it!
+        bets = db.execute("""SELECT b.team1_goals, b.team2_goals, b.bet_score FROM bets b 
+                          JOIN matches as m ON b.match_id = m.id AND m.matchday = ? 
+                          WHERE b.user_id = ? ORDER BY b.match_id ASC""", (matchday, user_id)).fetchall()
+        user_bets = []  # Data is stored as (bet, score)
+        for bet in bets:
+            t1_goals = bet[0]
+            t2_goals = bet[1]
+            bet_score = bet[2]
+            if t1_goals == None or t2_goals == None:
+                user_bet = "-:-"
+            else:
+                user_bet = f"{t1_goals}:{t2_goals}"
+            data = (user_bet, bet_score)
+            user_bets.append(data)
+        bet_data.append((rank, user_name, user_score, user_bets))
+        rank += 1
+    
+    # Lets finish up the matchdata as well
+    match_data = []
+    for match in matches:
+        m_t1, m_t2, result = match[1], match[2], match[3]
+        #assign flag tags
+        flag_t1, flag_t2 = "xx", "xx"
+        if m_t1 in country_dict:
+            flag_t1 = country_dict[m_t1]
+        if m_t2 in country_dict:
+            flag_t2 = country_dict[m_t2]
+        match_data.append((flag_t1, flag_t2, result))
+    return render_template("leaderboard.html", bet_data=bet_data, match_data=match_data, username=username, matchday=matchday, matchday_alias=matchday_alias)
 
 # Close the database connection at ?request? end
 @app.teardown_appcontext
