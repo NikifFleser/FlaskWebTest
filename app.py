@@ -66,8 +66,8 @@ def bet(matchday):
             disable = True
 
         live = format_datetime(m)
-        if old_result != m_result and m_result != "-:-":
-            update_match_result(DATABASE, m_id, m_result) #update the match and related bets
+        #if old_result != m_result and m_result != "-:-":
+        update_match_result(DATABASE, m_id, m_result) #update the match and related bets
         
 
         matches.append((m_id, flag_t1, flag_t2, #0,1,2
@@ -126,8 +126,8 @@ def leaderboard(matchday):
 
             if t1_goals == None or t2_goals == None:
                 user_bet = "-:-"
-            elif not match_started:
-                if b_user_id == user_id:
+            elif match_started:
+                if b_user_id == session.get("user_id"):
                     user_bet = f"{t1_goals}:{t2_goals}"
                 else:
                     user_bet = "-:-"
