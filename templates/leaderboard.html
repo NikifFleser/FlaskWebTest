@@ -24,55 +24,25 @@ Tipp-Tabelle
         <table id="lead-table">
             <thead>
                 <tr>
-                    <th class="rank">Pos</th>
-                    <th class="player">Spieler</th>
-                    <th class="points">Punkte</th>
+                    <th class="rank sticky">Pos</th>
+                    <th class="player sticky">Spieler</th>
+                    <th class="points sticky">Punkte</th>
                     <th class="result">
-                        <div>KOR : POL</div>
+                        <!-- div>KOR : POL</div -->
+                        <div>
+                            <span class="fi fi-af" style="font-size: 18px;"></span>
+                            <span style="font-size: 18px;">:</span>
+                            <span class="fi fi-ag" style="font-size: 18px;"></span>
+                        </div>
                         <div>2:2</div>
                     </th>
                     <th class="result">
-                        <div>KOR : POL</div>
-                        <div>2:2</div>
-                    </th>
-                    <th class="result">
-                        <div>KOR : POL</div>
-                        <div>2:2</div>
-                    </th>
-                    <th class="result">
-                        <div>KOR : POL</div>
-                        <div>2:2</div>
-                    </th>
-                    <th class="result">
-                        <div>KOR : POL</div>
-                        <div>2:2</div>
-                    </th>
-                    <th class="result">
-                        <div>KOR : POL</div>
-                        <div>2:2</div>
-                    </th>
-                    <th class="result">
-                        <div>KOR : POL</div>
-                        <div>2:2</div>
-                    </th>
-                    <th class="result">
-                        <div>KOR : POL</div>
-                        <div>2:2</div>
-                    </th>
-                    <th class="result">
-                        <div>KOR : POL</div>
-                        <div>2:2</div>
-                    </th>
-                    <th class="result">
-                        <div>KOR : POL</div>
-                        <div>2:2</div>
-                    </th>
-                    <th class="result">
-                        <div>KOR : POL</div>
-                        <div>2:2</div>
-                    </th>
-                    <th class="result">
-                        <div>KOR : POL</div>
+                        <!-- div>KOR : POL</div -->
+                        <div>
+                            <span class="fi fi-af" style="font-size: 18px;"></span>
+                            <span style="font-size: 18px;">:</span>
+                            <span class="fi fi-ag" style="font-size: 18px;"></span>
+                        </div>
                         <div>2:2</div>
                     </th>
                 </tr>
@@ -80,19 +50,9 @@ Tipp-Tabelle
             <tbody>
                 {% for user in users %}
                 <tr>
-                    <td class="rank">1.</td>
-                    <td class="player">{{ user[0] }}</td>
-                    <td class="points">{{ user[1] }}</td>
-                    <td>5</td>
-                    <td>5</td>
-                    <td>5</td>
-                    <td>5</td>
-                    <td>5</td>
-                    <td>5</td>
-                    <td>5</td>
-                    <td>5</td>
-                    <td>5</td>
-                    <td>5</td>
+                    <td class="rank sticky">1.</td>
+                    <td class="player sticky">{{ user[0] }}</td>
+                    <td class="points sticky">{{ user[1] }}</td>
                     <td>5</td>
                     <td>5</td>
                 </tr>
@@ -100,5 +60,7 @@ Tipp-Tabelle
             </tbody>
         </table>
     </div>
+
+    <script src="{{ url_for('static', filename='js/leaderboard.js') }}"></script>
 </body>
 {% endblock %}
