@@ -2,7 +2,7 @@ from flask import Flask, request, session, g
 from flask import render_template, redirect, url_for, jsonify
 from flask_wtf.csrf import CSRFProtect
 from db import country_dict, matchday_list, update_match_result
-from db import init_db, get_db, update_bet_in_db, update_user_scores
+from db import init_db, get_db, update_bet_in_db, update_user_scores, update_matches
 from auth import auth_bp, requires_admin, requires_login
 from api import game_get_online_id, get_current_matchday, get_game, get_games, game_get_result, game_get_db_id, game_get_date, get_datetime, format_datetime
 from datetime import datetime
@@ -102,6 +102,7 @@ def leaderboard(matchday):
     db = get_db(DATABASE)
     users = db.execute("SELECT id, username, score FROM users ORDER BY score DESC").fetchall()
     matches = db.execute("SELECT id, team1, team2, result FROM matches WHERE matchday = ? ORDER BY id ASC", (matchday,)).fetchall()
+    matches_api = get_games(matchday)
 
     # This is going to be a bit messy...
     bet_data = []
@@ -140,8 +141,11 @@ def leaderboard(matchday):
     
     # Lets finish up the matchdata as well
     match_data = []
-    for match in matches:
-        m_t1, m_t2, result = match[1], match[2], match[3]
+    for match in matches_api:
+        m_t1 = match["team1"]["teamName"]
+        m_t2 = match["team2"]["teamName"]
+        result = game_get_result(match)
+        # m_t1, m_t2, result = match[1], match[2], match[3]
         #assign flag tags
         flag_t1, flag_t2 = "xx", "xx"
         if m_t1 in country_dict:
